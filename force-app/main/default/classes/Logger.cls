@@ -3,7 +3,6 @@ public without sharing class Logger {
     static PublishMethod defaultMethod; 
     static Integer ordinal = 1;
     static List<Log__c> pendingLogs = new List<Log__c>(); 
-    @TestVisible
     static LogSetting__c settings; 
     static System.LoggingLevel threshold;
     static final String TRANSACTION_ID = System.Request.getCurrent()?.getRequestId();
@@ -14,24 +13,23 @@ public without sharing class Logger {
     String source;
 
     public Logger log(System.LoggingLevel level, Object body) {
-        // TODO!
-        // 1. Determine whether logging is enabled for the user
-        // 2. Determine whether the level meets/exceeds the threshold
-        // 3. Generate a Log__c record and add to pendingLogs
-        Log__c log = new Log__c(
-            ApexClass__c = this.apexClass?.getName(),
-            Body__c = String.valueOf(body),
-            Context__c = System.Request.getCurrent()?.getQuiddity()?.name(),
-            Level__c = level?.name(),
-            LoggedAt__c = DateTime.now(),
-            LoggedBy__c = UserInfo.getUserId(),
-            Ordinal__c = ordinal++,
-            RelatedRecordId__c = this.relatedRecordId,
-            Source__c = this.source,
-            StackTrace__c = this.generateStackTrace(),
-            Transaction__c = TRANSACTION_ID
-        ); 
-        Logger.pendingLogs?.add(log); 
+        if (this.shouldLog(level)) {
+            // * Generate a Log__c record and add to pendingLogs
+            Log__c log = new Log__c(
+                ApexClass__c = this.apexClass?.getName(),
+                Body__c = String.valueOf(body),
+                Context__c = System.Request.getCurrent()?.getQuiddity()?.name(),
+                Level__c = level?.name(),
+                LoggedAt__c = DateTime.now(),
+                LoggedBy__c = UserInfo.getUserId(),
+                Ordinal__c = ordinal++,
+                RelatedRecordId__c = this.relatedRecordId,
+                Source__c = this.source,
+                StackTrace__c = this.generateStackTrace(),
+                Transaction__c = TRANSACTION_ID
+            ); 
+            Logger.pendingLogs?.add(log); 
+        }
         return this;
     }
 
@@ -105,6 +103,12 @@ public without sharing class Logger {
     private String generateStackTrace() {
         // TODO!
         return null;
+    }
+
+    private Boolean shouldLog(System.LoggingLevel level) {
+        // Returns true if Logging is enabled for the current user, 
+        // and if the level meets/exceeds the defined threshold
+        return false; // TODO!
     }
     
     // **** INNER **** // 
