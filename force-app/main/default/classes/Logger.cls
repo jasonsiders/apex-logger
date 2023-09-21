@@ -80,11 +80,6 @@ public without sharing class Logger {
         return this.publish(Logger.defaultMethod); 
     }
 
-    public Logger relateTo(Type apexClass) {
-        this.apexClass = apexClass;
-        return this; 
-    }
-
     public Logger relateTo(Id recordId) {
         this.relatedRecordId = recordId; 
         return this; 
@@ -92,6 +87,11 @@ public without sharing class Logger {
     
     public Logger relateTo(SObject record) {
         return this.relateTo(record?.Id);
+    }
+
+    public Logger setApexClass(Type apexClass) {
+        this.apexClass = apexClass;
+        return this; 
     }
 
     public Logger setSource(String source) {
