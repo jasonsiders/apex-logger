@@ -13,42 +13,57 @@ public without sharing class Logger {
     Id relatedRecordId; 
     String source;
 
-    public void log(System.LoggingLevel level, Object body) {
+    public Logger log(System.LoggingLevel level, Object body) {
         // TODO!
         // 1. Determine whether logging is enabled for the user
         // 2. Determine whether the level meets/exceeds the threshold
         // 3. Generate a Log__c record and add to pendingLogs
+        Log__c log = new Log__c(
+            ApexClass__c = this.apexClass?.getName(),
+            Body__c = String.valueOf(body),
+            Context__c = System.Request.getCurrent()?.getQuiddity()?.name(),
+            Level__c = level?.name(),
+            LoggedAt__c = DateTime.now(),
+            LoggedBy__c = UserInfo.getUserId(),
+            Ordinal__c = ordinal++,
+            RelatedRecordId__c = this.relatedRecordId,
+            Source__c = this.source,
+            StackTrace__c = this.generateStackTrace(),
+            Transaction__c = TRANSACTION_ID
+        ); 
+        Logger.pendingLogs?.add(log); 
+        return this;
     }
 
-    public void error(Object body) {
-        this.log(System.LoggingLevel.ERROR, body); 
+    public Logger error(Object body) {
+        return this.log(System.LoggingLevel.ERROR, body); 
     }
 
-    public void warn(Object body) {
-        this.log(System.LoggingLevel.WARN, body); 
+    public Logger warn(Object body) {
+        return this.log(System.LoggingLevel.WARN, body); 
     }
 
-    public void info(Object body) {
-        this.log(System.LoggingLevel.INFO, body); 
+    public Logger info(Object body) {
+        return this.log(System.LoggingLevel.INFO, body); 
     }
 
-    public void debug(Object body) {
-        this.log(System.LoggingLevel.DEBUG, body); 
+    public Logger debug(Object body) {
+        return this.log(System.LoggingLevel.DEBUG, body); 
     }
 
-    public void fine(Object body) {
-        this.log(System.LoggingLevel.FINE, body); 
+    public Logger fine(Object body) {
+        return this.log(System.LoggingLevel.FINE, body); 
     }
 
-    public void finer(Object body) {
-        this.log(System.LoggingLevel.FINER, body); 
+    public Logger finer(Object body) {
+        return this.log(System.LoggingLevel.FINER, body); 
     }
 
-    public void finest(Object body) {
-        this.log(System.LoggingLevel.FINEST, body); 
+    public Logger finest(Object body) {
+        return this.log(System.LoggingLevel.FINEST, body); 
     }
 
-    public void publish(PublishMethod method) {
+    public Logger publish(PublishMethod method) {
         switch on method {
             when PLATFORM_EVENT {
                 // TODO! Publish an event, somehow
@@ -59,11 +74,12 @@ public without sharing class Logger {
             }
         }
         Logger.pendingLogs?.clear(); 
+        return this; 
     }
 
-    public void publish() {
+    public Logger publish() {
         // Default to the default publishing method, which is defined in Custom Settings
-        this.publish(Logger.defaultMethod); 
+        return this.publish(Logger.defaultMethod); 
     }
 
     public Logger relateTo(Type apexClass) {
@@ -83,6 +99,12 @@ public without sharing class Logger {
     public Logger setSource(String source) {
         this.source = source;
         return this; 
+    }
+
+    // **** PRIVATE **** // 
+    private String generateStackTrace() {
+        // TODO!
+        return null;
     }
     
     // **** INNER **** // 
