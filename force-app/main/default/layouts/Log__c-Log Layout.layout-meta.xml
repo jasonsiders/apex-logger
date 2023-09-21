@@ -28,10 +28,6 @@
             </layoutItems>
             <layoutItems>
                 <behavior>Readonly</behavior>
-                <field>PublishMethod__c</field>
-            </layoutItems>
-            <layoutItems>
-                <behavior>Readonly</behavior>
                 <field>Transaction__c</field>
             </layoutItems>
             <layoutItems>
