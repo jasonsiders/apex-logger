@@ -243,13 +243,33 @@ private class LoggerTest {
     @IsTest 
     static void shouldHandleIllegalPublisherValue() {
         // If Publisher__c is set, but isn't a valid Logger.LogPublisher, should use the default publisher
-        Assert.fail('You still need to build this test');
+        LogSetting__c settings = LoggerTest.initActiveSettings(System.LoggingLevel.FINEST);
+        settings.Publisher__c = 'abc123'; // Not a real publisher
+        update settings;
+
+        Test.startTest();
+        new Logger()?.error('This is a test')?.publish();
+        Test.stopTest();
+
+        List<Log__c> published = [SELECT Id FROM Log__c];
+        Assert.areEqual(1, published?.size(), 'Wrong # of published logs');
     }
 
     @IsTest 
     static void shouldHandleIllegalThresholdValue() {
         // If Threshold__c is set, but isn't a valid System.LoggingLevel, should default to NONE
-        Assert.fail('You still need to build this test');
+        LogSetting__c settings = new LogSetting__c(
+            Enabled__c = true,
+            SetupOwnerId = UserInfo.getUserId(),
+            Threshold__c = 'abc123' // Not a real LoggingLevel
+        );
+        insert settings;
+
+        Test.startTest();
+        new Logger()?.error('This is a test');
+        Test.stopTest();
+
+        Assert.areEqual(0, Logger.pendingLogs?.size(), 'Wrong # of Logs');
     }
 
     // **** HELPER **** //
