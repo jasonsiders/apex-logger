@@ -105,21 +105,28 @@ global without sharing virtual class Logger {
     static System.LoggingLevel getThreshold() {
         // Returns the Threshold__c value expressed as a LoggingLevel enum
         // Defaults to NONE if illegal or missing values configured
+        System.LoggingLevel threshold; 
         try {
             LogSetting__c settings = LogSetting__c.getInstance();
             String levelName = settings?.Threshold__c?.toUpperCase();
-            System.LoggingLevel value = System.LoggingLevel.valueOf(levelName);
-            return value != null ? value : System.LoggingLevel.NONE;
+            threshold = System.LoggingLevel.valueOf(levelName);
         } catch (Exception error) {
             // Enum.valueOf() throws errors for illegal values
-            return System.LoggingLevel.NONE;
         }
+        return threshold != null ? threshold : System.LoggingLevel.NONE;
     }
 
     static LogPublisher getDefaultPublisher() {
         // Returns the LogPublisher class defined in custom settings
         // If none defined, returns an instance of LogDmlPublisher
-        LogPublisher publisher; // TODO!
+        LogPublisher publisher;
+        try {
+            LogSetting__c settings = LogSetting__c.getInstance();
+            String publisherName = null; // TODO!
+            publisher = (LogPublisher) Type.forName(publisherName)?.newInstance();
+        } catch (Exception error) {
+            // May get a Type error if type not found, or if not an instance of LogPublisher
+        }
         return publisher != null ? publisher : new LogDmlPublisher();
     }
 
