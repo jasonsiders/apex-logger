@@ -117,11 +117,12 @@ global without sharing virtual class Logger {
     }
 
     static LogPublisher getDefaultPublisher() {
-        // TODO: Get from CMDT
-        LogPublisher publisher = DEFAULT_PUBLISHER;
-        return publisher; 
+        // Returns the LogPublisher class defined in custom settings
+        // If none defined, returns an instance of LogDmlPublisher
+        LogPublisher publisher; // TODO!
+        return publisher != null ? publisher : new LogDmlPublisher();
     }
-    
+
     private Boolean meetsThreshold(System.LoggingLevel level) {
         // Returns true if the level meets/exceeds the threshold
         // With the exception of NONE - which has an ordinal of 0, and should never be valid
