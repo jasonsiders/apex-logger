@@ -1,14 +1,15 @@
 global without sharing virtual class Logger {
+    // Constants
+    static final LogPublisher DEFAULT_PUBLISHER = Logger.getDefaultPublisher(); 
+    static final Boolean DO_PRINT = Test.isRunningTest();
+    static final System.Quiddity QUIDDITY = System.Request.getCurrent()?.getQuiddity();
+    static final System.LoggingLevel THRESHOLD = Logger.getThreshold();
+    static final String TRANSACTION_ID = System.Request.getCurrent()?.getRequestId();
     // Static Logger variables
     @TestVisible
     static List<Log__c> pendingLogs = new List<Log__c>(); 
-    static LogPublisher configuredPublisher = Logger.getConfiguredPublisher(); 
     static Integer ordinal = 1;
-    static System.LoggingLevel threshold = Logger.getThreshold();
-    // Constants
-    static final String TRANSACTION_ID = System.Request.getCurrent()?.getRequestId();
-
-    // Log-specific members
+    // Non-static members
     Type apexClass;
     Id relatedRecordId; 
     String source;
@@ -18,21 +19,26 @@ global without sharing virtual class Logger {
         return new Log__c(
             ApexClass__c = this.apexClass?.getName(),
             Body__c = String.valueOf(body),
-            Context__c = System.Request.getCurrent()?.getQuiddity()?.name(),
+            Context__c = QUIDDITY?.name(),
             Level__c = level?.name(),
             LoggedAt__c = DateTime.now(),
             LoggedBy__c = UserInfo.getUserId(),
             Ordinal__c = ordinal++,
             RelatedRecordId__c = this.relatedRecordId,
             Source__c = this.source,
-            StackTrace__c = this.generateStackTrace(),
+            StackTrace__c = new LogException()?.getStackForLog(),
             Transaction__c = TRANSACTION_ID
         ); 
     }
 
     global virtual Logger log(System.LoggingLevel level, Object body) {
+        if (DO_PRINT) {
+            // Print to traditional Apex Debug Logs in @IsTest context
+            System.debug(body);
+        }
         if (this.shouldLog(level)) {
-            // * Generate a Log__c record and add to pendingLogs
+            // Generate a log and add it to the list of pending logs to publish
+            // Logs will not be committed to the database until publish() is called
             Log__c log = this.generateLog(level, body);
             pendingLogs?.add(log); 
         }
@@ -40,6 +46,7 @@ global without sharing virtual class Logger {
     }
 
     global virtual Logger publish(LogPublisher publisher) {
+        // Commit any pending logs to the database, then purge the list of pending logs
         publisher?.publish(pendingLogs);
         pendingLogs?.clear(); 
         return this; 
@@ -76,7 +83,7 @@ global without sharing virtual class Logger {
 
     global Logger publish() {
         // Default to the configured publishing method from Custom Settings
-        return this.publish(configuredPublisher); 
+        return this.publish(DEFAULT_PUBLISHER); 
     }
 
     global Logger setApexClass(Type apexClass) {
@@ -95,16 +102,31 @@ global without sharing virtual class Logger {
     }
 
     // **** PRIVATE **** // 
-    private String generateStackTrace() {
-        return new LogException()?.sourceStackTrace();
+    static System.LoggingLevel getThreshold() {
+        // Returns the Threshold__c value expressed as a LoggingLevel enum
+        // Defaults to NONE if illegal or missing values configured
+        try {
+            LogSetting__c settings = LogSetting__c.getInstance();
+            String levelName = settings?.Threshold__c?.toUpperCase();
+            System.LoggingLevel value = System.LoggingLevel.valueOf(levelName);
+            return value != null ? value : System.LoggingLevel.NONE;
+        } catch (Exception error) {
+            // Enum.valueOf() throws errors for illegal values
+            return System.LoggingLevel.NONE;
+        }
     }
 
+    static LogPublisher getDefaultPublisher() {
+        // TODO: Get from CMDT
+        LogPublisher publisher = DEFAULT_PUBLISHER;
+        return publisher; 
+    }
+    
     private Boolean meetsThreshold(System.LoggingLevel level) {
         // Returns true if the level meets/exceeds the threshold
         // With the exception of NONE - which has an ordinal of 0, and should never be valid
         Integer currentSev = (level != null) ? level?.ordinal() : 0; 
-        Integer thresholdSev = (threshold != null) ? threshold?.ordinal() : 0;
-        System.debug('meetsThreshold() -> currentSev: ' + currentSev + '. thresholdSev: ' + thresholdSev);
+        Integer thresholdSev = (THRESHOLD != null) ? THRESHOLD?.ordinal() : 0;
         return thresholdSev != 0 && currentSev >= thresholdSev; 
     }
 
@@ -113,29 +135,7 @@ global without sharing virtual class Logger {
         // and if the level meets/exceeds the defined threshold
         Boolean isEnabled = LogSetting__c.getInstance()?.Enabled__c == true; 
         Boolean meetsThreshold = this.meetsThreshold(level);
-        System.debug('Is Enabled: ' + isEnabled + '. Meets Threshold? ' + meetsThreshold);
         return isEnabled && meetsThreshold; 
-    }
-
-    // **** STATIC **** // 
-    static System.LoggingLevel getThreshold() {
-        // Returns the Threshold__c value expressed as a LoggingLevel enum
-        // Defaults to NONE if illegal or missing values configured
-        try {
-            LogSetting__c settings = LogSetting__c.getInstance();
-            String thresholdName = settings?.Threshold__c?.toUpperCase();
-            System.LoggingLevel threshold = System.LoggingLevel.valueOf(thresholdName);
-            return threshold != null ? threshold : System.LoggingLevel.NONE;
-        } catch (Exception error) {
-            // Enum.valueOf() throws errors for illegal values
-            return System.LoggingLevel.NONE;
-        }
-    }
-
-    static LogPublisher getConfiguredPublisher() {
-        // TODO: Get from CMDT
-        LogPublisher publisher = new LogDmlPublisher();
-        return publisher; 
     }
     
     // **** INNER **** // 
@@ -147,16 +147,16 @@ global without sharing virtual class Logger {
         // This exception will never be thrown - used to generate a stack trace string for log messages
         final String loggerPrefix = 'Class.' + Logger.class?.getName() + '.';
 
-		private String sourceStackTrace() {
+		private String getStackForLog() {
             // Returns a stack trace string w/out Logger class internals
             // This allows callers to view the stack trace up until they called the logger method
-			List<String> stackTraceLines = new List<String>();
-			for (String stackTraceLine : this.getStackTraceString()?.split('\n')) {
-				if (!stackTraceLine?.startsWith(this.loggerPrefix)) {
-					stackTraceLines.add(stackTraceLine);
+			List<String> stackLines = new List<String>();
+			for (String stackLine : this.getStackTraceString()?.split('\n')) {
+				if (!stackLine?.startsWith(this.loggerPrefix)) {
+					stackLines.add(stackLine);
 				}
 			}
-			return String.join(stackTraceLines, '\n');
+			return String.join(stackLines, '\n');
 		}
 	}
 }
