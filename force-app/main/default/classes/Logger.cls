@@ -1,7 +1,6 @@
 global without sharing virtual class Logger {
     // Constants
     static final LogPublisher DEFAULT_PUBLISHER = Logger.getDefaultPublisher(); 
-    static final Boolean DO_PRINT = Test.isRunningTest();
     static final System.Quiddity QUIDDITY = System.Request.getCurrent()?.getQuiddity();
     static final System.LoggingLevel THRESHOLD = Logger.getThreshold();
     static final String TRANSACTION_ID = System.Request.getCurrent()?.getRequestId();
@@ -32,7 +31,7 @@ global without sharing virtual class Logger {
     }
 
     global virtual Logger log(System.LoggingLevel level, Object body) {
-        if (DO_PRINT) {
+        if (Test.isRunningTest()) {
             // Print to traditional Apex Debug Logs in @IsTest context
             System.debug(body);
         }
