@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Publisher__c</fullName>
+    <externalId>false</externalId>
+    <inlineHelpText>Specifies the class which handles log publishing logic. 
+Must be the fully-qualified API name of an apex class which implements the Logger.LogPublisher interface.
+When left blank, Logs will be published via synchronous DML.</inlineHelpText>
+    <label>Publisher</label>
+    <length>255</length>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

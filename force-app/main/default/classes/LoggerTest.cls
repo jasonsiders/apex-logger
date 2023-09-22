@@ -240,6 +240,18 @@ private class LoggerTest {
         Assert.areEqual(1, published?.size(), 'Wrong # of published logs');
     }
 
+    @IsTest 
+    static void shouldHandleIllegalPublisherValue() {
+        // If Publisher__c is set, but isn't a valid Logger.LogPublisher, should use the default publisher
+        Assert.fail('You still need to build this test');
+    }
+
+    @IsTest 
+    static void shouldHandleIllegalThresholdValue() {
+        // If Threshold__c is set, but isn't a valid System.LoggingLevel, should default to NONE
+        Assert.fail('You still need to build this test');
+    }
+
     // **** HELPER **** //
     static User createTestUser() {
         List<Profile> profiles = [SELECT Id FROM Profile WHERE Name = 'Standard User' LIMIT 1];

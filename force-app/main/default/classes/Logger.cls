@@ -121,7 +121,7 @@ global without sharing virtual class Logger {
         LogPublisher publisher;
         try {
             LogSetting__c settings = LogSetting__c.getInstance();
-            String publisherName = null; // TODO!
+            String publisherName = settings?.Publisher__c; 
             publisher = (LogPublisher) Type.forName(publisherName)?.newInstance();
         } catch (Exception error) {
             // May get a Type error if type not found, or if not an instance of LogPublisher
