@@ -21,6 +21,11 @@ private class LoggerTest {
     }
 
     @IsTest 
+    static void shouldNotLogIfThresholdIsNone() {
+        Assert.fail('You still need to build this test');
+    }
+
+    @IsTest 
     static void shouldPublishViaSynchronousDml() {
         Assert.fail('You still need to build this test');
     }
@@ -57,6 +62,11 @@ private class LoggerTest {
 
     @IsTest 
     static void shouldLogUsingShorthandOverloads() {
+        Assert.fail('You still need to build this test');
+    }
+
+    @IsTest 
+    static void shouldLogRegardlessOfUserAccess() {
         Assert.fail('You still need to build this test');
     }
 }
