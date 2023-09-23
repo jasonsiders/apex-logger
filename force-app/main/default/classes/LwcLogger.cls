@@ -1,7 +1,12 @@
 global abstract class LwcLogger {
     @AuraEnabled(cacheable=false)
     global static void log(Input logInput) {
-        logInput?.log();
+        try {
+            logInput?.log();
+        } catch (Exception anyError) {
+            String msg = anyError?.getMessage(); 
+            throw new AuraHandledException(msg); 
+        }
     }
 
     global class Input {
@@ -9,9 +14,9 @@ global abstract class LwcLogger {
         global String body, level, relatedRecordId, source;
 
         private void log() {
-            Logger logger = new Logger();
-            // TODO!
-            logger?.publish();
+            System.LoggingLevel level = System.LoggingLevel.valueOf(this.level); 
+            Id recordId = (this.relatedRecordId instanceOf Id) ? this.relatedRecordId : null;
+            new Logger()?.setApexClass(LwcLogger.class)?.setRecordId(recordId)?.setSource(this.source)?.log(level, this.body)?.publish();
         }
     }
 }
