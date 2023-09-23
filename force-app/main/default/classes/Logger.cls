@@ -1,6 +1,8 @@
 global without sharing virtual class Logger {
     // Constants
     static final LogPublisher DEFAULT_PUBLISHER = Logger.getDefaultPublisher(); 
+    static final Integer LONG_TEXT_LENGTH = Log__c.Body__c?.getDescribe()?.getLength();
+    static final Integer SHORT_TEXT_LENGTH = Log__c.Source__c?.getDescribe()?.getLength();
     static final System.Quiddity QUIDDITY = System.Request.getCurrent()?.getQuiddity();
     static final System.LoggingLevel THRESHOLD = Logger.getThreshold();
     static final String TRANSACTION_ID = System.Request.getCurrent()?.getRequestId();
@@ -17,15 +19,15 @@ global without sharing virtual class Logger {
     global virtual Log__c generateLog(System.LoggingLevel level, Object body) {
         return new Log__c(
             ApexClass__c = this.apexClass?.getName(),
-            Body__c = String.valueOf(body),
+            Body__c = String.valueOf(body)?.abbreviate(LONG_TEXT_LENGTH),
             Context__c = QUIDDITY?.name(),
             Level__c = level?.name(),
             LoggedAt__c = DateTime.now(),
             LoggedBy__c = UserInfo.getUserId(),
             Ordinal__c = ordinal++,
             RelatedRecordId__c = this.relatedRecordId,
-            Source__c = this.source,
-            StackTrace__c = new LogException()?.getStackForLog(),
+            Source__c = this.source?.abbreviate(SHORT_TEXT_LENGTH),
+            StackTrace__c = new LogException()?.getStackForLog()?.abbreviate(LONG_TEXT_LENGTH),
             Transaction__c = TRANSACTION_ID
         ); 
     }

@@ -272,6 +272,29 @@ private class LoggerTest {
         Assert.areEqual(0, Logger.pendingLogs?.size(), 'Wrong # of Logs');
     }
 
+    @IsTest 
+    static void shouldHandleTextFieldsBeyondLength() {
+        // The logger should abbreviate any user-set String variables if they exceed their fields' length,
+        // Note: This also applies to stack trace - which isn't set by the user, but it's much harder to test for this, 
+        // since you cannot manually set an Exception's stack trace string value
+        LogSetting__c settings = LoggerTest.initActiveSettings(System.LoggingLevel.FINEST);
+        Integer badLen = 150000; // No Salesforce field supports this # of characters!
+
+        Test.startTest();
+        try {
+            new Logger()?.setSource('S'?.repeat(badLen))?.finest('B'?.repeat(badLen))?.publish();
+        } catch (Exception error) {
+            Assert.fail('Failed to log: ' + error);
+        }
+        Test.stopTest();
+
+        List<Log__c> logs = [SELECT Id, Body__c, Source__c FROM Log__c];
+        Assert.areEqual(1, logs?.size(), 'Wrong # of Logs');
+        Log__c log = logs[0];
+        Assert.areEqual(Log__c.Body__c?.getDescribe()?.getLength(), log?.Body__c?.length(), 'Did not abbreviate Body to max length');
+        Assert.areEqual(Log__c.Source__c?.getDescribe()?.getLength(), log?.Source__c?.length(), 'Did not abbreviate Source to max length');
+    }
+
     // **** HELPER **** //
     static User createTestUser() {
         List<Profile> profiles = [SELECT Id FROM Profile WHERE Name = 'Standard User' LIMIT 1];
