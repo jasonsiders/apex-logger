@@ -1,22 +1,27 @@
 global abstract class LwcLogger {
+    // Exposes logging functionality for use in Lightning Components.
+    // Note: Users must be given access to this class in order to use its methods.
+
     @AuraEnabled(cacheable=false)
-    global static void log(Input logInput) {
+    global static void log(String payload) {
         try {
-            logInput?.log();
+            Input input = (Input) JSON.deserialize(payload, Input.class); 
+            input?.log();
         } catch (Exception anyError) {
             String msg = anyError?.getMessage(); 
             throw new AuraHandledException(msg); 
         }
     }
 
-    global class Input {
-        @AuraEnabled
-        global String body, level, relatedRecordId, source;
-
+    @TestVisible
+    private class Input {
+        public String body, relatedRecordId, source; 
+        public System.LoggingLevel level; 
+        
         private void log() {
-            System.LoggingLevel level = System.LoggingLevel.valueOf(this.level); 
+            System.debug('Input: ' + JSON.serialize(this));
             Id recordId = (this.relatedRecordId instanceOf Id) ? this.relatedRecordId : null;
-            new Logger()?.setApexClass(LwcLogger.class)?.setRecordId(recordId)?.setSource(this.source)?.log(level, this.body)?.publish();
+            new Logger()?.setApexClass(LwcLogger.class)?.setRecordId(recordId)?.setSource(this.source)?.log(this.level, this.body)?.publish();
         }
     }
 }

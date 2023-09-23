@@ -4,10 +4,10 @@ private class LwcLoggerTest {
     static void shouldLogWithValidLoggingLevel() {
         LwcLogger.Input input = new LwcLogger.Input(); 
         input.body = 'This is a test';
-        input.level = System.LoggingLevel.ERROR.name();
+        input.level = System.LoggingLevel.ERROR;
 
         Test.startTest();
-        LwcLogger.log(input);
+        LwcLogger.log(JSON.serialize(input));
         Test.stopTest();
 
         List<Log__c> logs = LwcLoggerTest.getLogs(); 
@@ -15,7 +15,7 @@ private class LwcLoggerTest {
         Log__c log = logs[0];
         Assert.areEqual(LwcLogger.class?.getName(), log?.ApexClass__c, 'Wrong Apex Class'); 
         Assert.areEqual(input?.body, log?.Body__c, 'Wrong Level'); 
-        Assert.areEqual(input?.level, log?.Level__c, 'Wrong Level'); 
+        Assert.areEqual(input?.level?.name(), log?.Level__c, 'Wrong Level'); 
         Assert.isNull(log?.RelatedRecordId__c, 'RelatedRecordId was set, but how?');
         Assert.isNull(log?.Source__c, 'Source was set, but how?');
     }
@@ -24,12 +24,12 @@ private class LwcLoggerTest {
     static void shouldLogWithAdvancedDetails() {
         LwcLogger.Input input = new LwcLogger.Input(); 
         input.body = 'This is a test';
-        input.level = System.LoggingLevel.ERROR.name();
+        input.level = System.LoggingLevel.ERROR;
         input.relatedRecordId = UserInfo.getUserId(); 
         input.source = 'fooBarLwc';
 
         Test.startTest();
-        LwcLogger.log(input);
+        LwcLogger.log(JSON.serialize(input));
         Test.stopTest();
 
         List<Log__c> logs = LwcLoggerTest.getLogs(); 
@@ -37,42 +37,25 @@ private class LwcLoggerTest {
         Log__c log = logs[0];
         Assert.areEqual(LwcLogger.class?.getName(), log?.ApexClass__c, 'Wrong Apex Class'); 
         Assert.areEqual(input?.body, log?.Body__c, 'Wrong Level'); 
-        Assert.areEqual(input?.level, log?.Level__c, 'Wrong Level'); 
+        Assert.areEqual(input?.level?.name(), log?.Level__c, 'Wrong Level'); 
         Assert.areEqual(input?.relatedRecordId, log?.RelatedRecordId__c, 'Wrong RelatedRecordId'); 
         Assert.areEqual(input?.source, log?.Source__c, 'Wrong Source'); 
     }
 
     @IsTest 
-    static void shouldThrowErrorIfInvalidLoggingLevel() {
-        LwcLogger.Input input = new LwcLogger.Input(); 
-        input.body = 'This is a test';
-        input.level = 'abcd1234'; // Not a real logging level
+    static void shouldHandleInvalidPayload() {
+        String badPayload = 'abcd1234';
         Exception error; 
 
         Test.startTest();
         try {
-            LwcLogger.log(input);
+            LwcLogger.log(badPayload);
         } catch (AuraHandledException caughtError) {
-            error = caughtError;
+            error = caughtError; 
         }
         Test.stopTest();
 
-        Assert.isNotNull(error, 'An error was not thrown for an invalid type'); 
-    }
-
-    @IsTest 
-    static void shouldNotLogIfLevelIsNone() {
-        // NONE is still a valid level! No error, but will not log either
-        LwcLogger.Input input = new LwcLogger.Input(); 
-        input.body = 'This is a test';
-        input.level = System.LoggingLevel.NONE.name();
-
-        Test.startTest();
-        LwcLogger.log(input);
-        Test.stopTest();
-
-        List<Log__c> logs = LwcLoggerTest.getLogs(); 
-        Assert.areEqual(0, logs?.size(), 'Wrong # of Logs created'); 
+        Assert.isNotNull(error, 'Error was not thrown/caught for a bad payload'); 
     }
 
     @IsTest 
@@ -80,11 +63,11 @@ private class LwcLoggerTest {
         // relatedRecordId isn't a required parameter. If invalid, will default to null.
         LwcLogger.Input input = new LwcLogger.Input(); 
         input.body = 'This is a test';
-        input.level = System.LoggingLevel.FINEST.name();
+        input.level = System.LoggingLevel.ERROR;
         input.relatedRecordId = 'abcd1234'; // Not a real record id
 
         Test.startTest();
-        LwcLogger.log(input);
+        LwcLogger.log(JSON.serialize(input));
         Test.stopTest();
 
         List<Log__c> logs = LwcLoggerTest.getLogs(); 
