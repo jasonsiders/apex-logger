@@ -1,10 +1,10 @@
 global abstract class LwcLogger {
     @AuraEnabled(cacheable=false)
-    global static void log(LogInput logInput) {
+    global static void log(Input logInput) {
         logInput?.log();
     }
 
-    global class LogInput {
+    global class Input {
         @AuraEnabled
         global String body, level, relatedRecordId, source;
 
