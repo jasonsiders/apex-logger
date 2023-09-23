@@ -59,12 +59,32 @@ private class LwcLoggerTest {
     }
 
     @IsTest 
+    static void shouldHandleInvalidLevel() {
+        LwcLogger.Input input = new LwcLogger.Input(); 
+        input.body = 'This is a test';
+        // We can't set an illegal System.LoggingLevel in apex - but JS still can!
+        Map<String, Object> params = (Map<String, Object>) JSON.deserializeUntyped(JSON.serialize(input));
+        params?.put('level', 'abcd1234');
+        Exception error; 
+
+        Test.startTest();
+        try {
+            LwcLogger.log(JSON.serialize(params));
+        } catch (AuraHandledException caughtError) {
+            error = caughtError; 
+        }  
+        Test.stopTest();
+
+        Assert.isNotNull(error, 'Error was not thrown/caught for bad LoggingLevel');
+    }
+
+    @IsTest 
     static void shouldHandleInvalidRecordId() {
         // relatedRecordId isn't a required parameter. If invalid, will default to null.
         LwcLogger.Input input = new LwcLogger.Input(); 
         input.body = 'This is a test';
         input.level = System.LoggingLevel.ERROR;
-        input.relatedRecordId = 'abcd1234'; // Not a real record id
+        input.relatedRecordId = 'abcd1234';
 
         Test.startTest();
         LwcLogger.log(JSON.serialize(input));
