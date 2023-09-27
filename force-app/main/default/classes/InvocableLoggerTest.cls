@@ -57,6 +57,24 @@ private class InvocableLoggerTest {
         Assert.areEqual(0, logs?.size(), 'Wrong # of logs created');
     }
 
+    @IsTest 
+    static void shouldHandleInvalidRecordId() {
+        // relatedRecordId isn't a required parameter. If invalid, will default to null.
+        InvocableLogger.Input input = new InvocableLogger.Input(); 
+        input.body = 'This is a test';
+        input.level = System.LoggingLevel.ERROR?.name();
+        input.relatedRecordId = 'abcd1234';
+
+        Test.startTest();
+        InvocableLogger.invoke(new List<InvocableLogger.Input>{input});
+        Test.stopTest();
+
+        List<Log__c> logs = Logger.pendingLogs;
+        Assert.areEqual(1, logs?.size(), 'Wrong # of Logs created'); 
+        Log__c log = logs[0];
+        Assert.isNull(log?.RelatedRecordId__c, 'Invalid relatedRecordId posted to log');
+    }
+
     // **** HELPER **** //
     @TestSetup
     static void setup() {

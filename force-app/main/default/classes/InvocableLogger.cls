@@ -15,16 +15,17 @@ global abstract class InvocableLogger {
 		global String level;
 
         @InvocableVariable
-        global Id relatedRecordId;
+        global String relatedRecordId;
 
         @InvocableVariable 
         global String source;
 
 		private void log() {
 			System.LoggingLevel level = this.getLevel();
+            Id relatedRecordId = this.getRelatedRecordId();
             new Logger()
                 ?.setApexClass(InvocableLogger.class)
-                ?.setRecordId(this.relatedRecordId)
+                ?.setRecordId(relatedRecordId)
                 ?.setSource(this.source)
                 ?.log(level, this.body);
 		}
@@ -37,6 +38,10 @@ global abstract class InvocableLogger {
                 // Invalid level name 
             }
             return level != null ? level : System.LoggingLevel.NONE;
+        }
+
+        private Id getRelatedRecordId() {
+            return (this.relatedRecordId instanceOf Id) ? (Id) this.relatedRecordId : null;
         }
     }
 }
