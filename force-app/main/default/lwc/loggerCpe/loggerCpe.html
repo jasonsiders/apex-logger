@@ -16,7 +16,15 @@
 				></lightning-textarea>
 				<lightning-layout>
 					<lightning-layout-item>
-						<c-cpe-combobox
+						<lightning-combobox
+							label="Level"
+							name={invocableVars.LEVEL}
+							onchange={handleChange}
+							options={levelOptions}
+							value={level}
+							required
+						></lightning-combobox>
+						<!-- <c-cpe-combobox
 							input-variables={inputVariables}
 							invocable-variable={invocableVars.LEVEL}
 							label="Level"
@@ -24,13 +32,13 @@
 							onchange={handleChange}
 							options={levelOptions}
 							required
-						></c-cpe-combobox>
+						></c-cpe-combobox> -->
 						<lightning-input
 							label="Flow Name"
 							name={invocableVars.LOGGED_FROM}
 							onchange={handleChange}
-							value={loggedFrom}
 							type="text"
+							value={loggedFrom}
 						></lightning-input>
 					</lightning-layout-item>
 					<lightning-layout-item>
@@ -38,15 +46,15 @@
 							label="Related Record Id"
 							name={invocableVars.RELATED_RECORD}
 							onchange={handleChange}
-							value={relatedRecordId}
 							type="text"
+							value={relatedRecordId}
 						></lightning-input>
 						<lightning-input
 							label="Source"
 							name={invocableVars.SOURCE}
 							onchange={handleChange}
-							value={source}
 							type="text"
+							value={source}
 						></lightning-input>
 					</lightning-layout-item>
 				</lightning-layout>

@@ -44,6 +44,10 @@ export default class CpeLogger extends CustomPropertyEditor {
 		return this.getInvocableVariable(InvocableVariables.BODY)?.value;
 	}
 
+	get level() {
+		return this.getInvocableVariable(InvocableVariables.LEVEL)?.value;
+	}
+
 	get loggedFrom() {
 		return this.getInvocableVariable(InvocableVariables.LOGGED_FROM)?.value;
 	}
