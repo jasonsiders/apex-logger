@@ -20,14 +20,21 @@
 					max-length={maxLength}
 					name={invocableVars.BODY}
 					onchange={handleChange}
-					value={bodyValue}
+					value={body}
 					required
 				></lightning-textarea>
+				<lightning-input
+					label="Flow Name"
+					name={invocableVars.LOGGED_FROM}
+					onchange={handleChange}
+					value={loggedFrom}
+					type="text"
+				></lightning-input>
 				<lightning-input
 					label="Source"
 					name={invocableVars.SOURCE}
 					onchange={handleChange}
-					value={sourceValue}
+					value={source}
 					type="text"
 				></lightning-input>
 			</div>

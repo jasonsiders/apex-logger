@@ -42,11 +42,15 @@ export default class CpeLogger extends CustomPropertyEditor {
 		return errors;
 	}
 
-	get bodyValue() {
+	get body() {
 		return this.getInvocableVariable(InvocableVariables.BODY)?.value;
 	}
 
-	get sourceValue() {
+	get loggedFrom() {
+		return this.getInvocableVariable(InvocableVariables.LOGGED_FROM)?.value;
+	}
+
+	get source() {
 		return this.getInvocableVariable(InvocableVariables.SOURCE)?.value;
 	}
 
