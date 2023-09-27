@@ -11,19 +11,19 @@ global without sharing virtual class Logger {
     static List<Log__c> pendingLogs = new List<Log__c>(); 
     static Integer ordinal = 1;
     // Non-static members
-    Type apexClass;
+    String loggedFrom;
     Id relatedRecordId; 
     String source;
 
     // **** VIRTUAL **** // 
     global virtual Log__c generateLog(System.LoggingLevel level, Object body) {
         return new Log__c(
-            ApexClass__c = this.apexClass?.getName(),
             Body__c = String.valueOf(body)?.abbreviate(LONG_TEXT_LENGTH),
             Context__c = QUIDDITY?.name(),
             Level__c = level?.name(),
             LoggedAt__c = DateTime.now(),
             LoggedBy__c = UserInfo.getUserId(),
+            LoggedFrom__c = this.loggedFrom,
             Ordinal__c = ordinal++,
             RelatedRecordId__c = this.relatedRecordId,
             Source__c = this.source?.abbreviate(SHORT_TEXT_LENGTH),
@@ -87,14 +87,22 @@ global without sharing virtual class Logger {
         return this.publish(DEFAULT_PUBLISHER); 
     }
 
-    global Logger setApexClass(Type apexClass) {
-        this.apexClass = apexClass;
+    global Logger setLoggedFrom(String componentName) {
+        this.loggedFrom = componentName;
         return this; 
     }
 
-    global Logger setRecordId(Id recordId) {
+    global Logger setLoggedFrom(Type apexClass) {
+        return this.setLoggedFrom(apexClass?.getName()); 
+    }
+
+    global Logger setRelatedRecordId(Id recordId) {
         this.relatedRecordId = recordId; 
         return this; 
+    }
+
+    global Logger setRelatedRecordId(SObject record) {
+        return this.setRelatedRecordId(record?.Id);
     }
 
     global Logger setSource(String source) {

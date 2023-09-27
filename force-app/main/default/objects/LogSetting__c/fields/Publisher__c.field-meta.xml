@@ -3,7 +3,7 @@
     <fullName>Publisher__c</fullName>
     <externalId>false</externalId>
     <inlineHelpText>Specifies the class which handles log publishing logic. 
-Must be the fully-qualified API name of an apex class which implements the Logger.LogPublisher interface.
+Must be the fully-qualified API name of an Logged From which implements the Logger.LogPublisher interface.
 When left blank, Logs will be published via synchronous DML.</inlineHelpText>
     <label>Publisher</label>
     <length>255</length>

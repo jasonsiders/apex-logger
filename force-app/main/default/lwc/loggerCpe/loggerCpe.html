@@ -1,0 +1,55 @@
+<template>
+	<div>
+		<lightning-card>
+			<div slot="title">
+				<lightning-icon icon-name="standard:form" size="medium"></lightning-icon>
+				<span class="slds-text-heading_medium slds-var-m-left_small">Post to Log</span>
+			</div>
+			<div lwc:if={invocableVars} class="slds-var-p-horizontal_small">
+				<lightning-textarea
+					label="Body"
+					max-length="100000"
+					name={invocableVars.BODY}
+					onchange={handleChange}
+					value={body}
+					required
+				></lightning-textarea>
+				<lightning-layout>
+					<lightning-layout-item class="slds-var-p-right_x-small" flexibility="auto">
+						<lightning-combobox
+							label="Level"
+							name={invocableVars.LEVEL}
+							onchange={handleChange}
+							options={levelOptions}
+							value={level}
+							required
+						></lightning-combobox>
+						<lightning-input
+							label="Flow Name"
+							name={invocableVars.LOGGED_FROM}
+							onchange={handleChange}
+							type="text"
+							value={loggedFrom}
+						></lightning-input>
+					</lightning-layout-item>
+					<lightning-layout-item class="slds-var-p-left_x-small" flexibility="auto">
+						<lightning-input
+							label="Related Record Id"
+							name={invocableVars.RELATED_RECORD}
+							onchange={handleChange}
+							type="text"
+							value={relatedRecordId}
+						></lightning-input>
+						<lightning-input
+							label="Source"
+							name={invocableVars.SOURCE}
+							onchange={handleChange}
+							type="text"
+							value={source}
+						></lightning-input>
+					</lightning-layout-item>
+				</lightning-layout>
+			</div>
+		</lightning-card>
+	</div>
+</template>

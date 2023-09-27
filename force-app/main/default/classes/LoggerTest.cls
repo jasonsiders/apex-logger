@@ -3,7 +3,7 @@ private class LoggerTest {
     @IsTest 
     static void shouldLogIfMeetsThreshold() {
         System.LoggingLevel level = System.LoggingLevel.INFO;
-        LogSetting__c settings = LoggerTest.initActiveSettings(level);
+        LogSetting__c settings = LogTestUtils.enableLogging(level);
         String logMsg = 'This is a test';
 
         Test.startTest();
@@ -13,7 +13,7 @@ private class LoggerTest {
         Assert.areEqual(1, Logger.pendingLogs?.size(), 'Wrong # of Logs');
         // Only this test - assert that fields are mapped correctly
         Log__c log = Logger.pendingLogs[0];
-        Assert.isNull(log?.ApexClass__c, 'Has Apex Class, but one wasn\'t set');
+        Assert.isNull(log?.LoggedFrom__c, 'Has Logged From, but one wasn\'t set');
         Assert.areEqual(logMsg, log?.Body__c, 'Wrong Log');
         Assert.isNotNull(log?.Context__c, 'Missing Context');
         Assert.areEqual(level?.name(), log?.Level__c, 'Wrong Level');
@@ -30,7 +30,7 @@ private class LoggerTest {
     
     @IsTest 
     static void shouldLogIfExceedsThreshold() {
-        LogSetting__c settings = LoggerTest.initActiveSettings(System.LoggingLevel.FINEST);   
+        LogSetting__c settings = LogTestUtils.enableLogging(System.LoggingLevel.FINEST);   
 
         Test.startTest();
         new Logger().log(System.LoggingLevel.INFO, 'This is a test');
@@ -42,7 +42,7 @@ private class LoggerTest {
     @IsTest 
     static void shouldNotLogIfDisabled() {
         System.LoggingLevel level = System.LoggingLevel.INFO;
-        LogSetting__c settings = LoggerTest.initActiveSettings(level);
+        LogSetting__c settings = LogTestUtils.enableLogging(level);
         settings.Enabled__c = false;
         update settings;
 
@@ -55,7 +55,7 @@ private class LoggerTest {
 
     @IsTest
     static void shouldNotLogIfBelowThreshold() {
-        LogSetting__c settings = LoggerTest.initActiveSettings(System.LoggingLevel.INFO);
+        LogSetting__c settings = LogTestUtils.enableLogging(System.LoggingLevel.INFO);
 
         Test.startTest();
         new Logger().log(System.LoggingLevel.FINEST, 'This is a test');
@@ -66,7 +66,7 @@ private class LoggerTest {
 
     @IsTest 
     static void shouldNotLogIfThresholdIsNone() {
-        LogSetting__c settings = LoggerTest.initActiveSettings(System.LoggingLevel.NONE);
+        LogSetting__c settings = LogTestUtils.enableLogging(System.LoggingLevel.NONE);
 
         Test.startTest();
         new Logger().log(System.LoggingLevel.ERROR, 'This is a test');
@@ -89,7 +89,7 @@ private class LoggerTest {
     @IsTest 
     static void shouldPublishViaDefaultMethod() {
         System.LoggingLevel level = System.LoggingLevel.INFO;
-        LogSetting__c settings = LoggerTest.initActiveSettings(level);
+        LogSetting__c settings = LogTestUtils.enableLogging(level);
         String logMsg = 'This is a test';
         Logger myLogger = new Logger()?.log(level, logMsg);
 
@@ -106,7 +106,7 @@ private class LoggerTest {
     @IsTest 
     static void shouldPublishViaSpecifiedMethod() {
         System.LoggingLevel level = System.LoggingLevel.INFO;
-        LogSetting__c settings = LoggerTest.initActiveSettings(level);
+        LogSetting__c settings = LogTestUtils.enableLogging(level);
         String logMsg = 'This is a test';
         Logger myLogger = new Logger();
         Logger.LogPublisher publisher = new TestPublisher();
@@ -126,7 +126,7 @@ private class LoggerTest {
     @IsTest 
     static void shouldIncrementOrdinal() {
         System.LoggingLevel level = System.LoggingLevel.INFO;
-        LogSetting__c settings = LoggerTest.initActiveSettings(level);
+        LogSetting__c settings = LogTestUtils.enableLogging(level);
         final Integer numLogs = 200; 
 
         Test.startTest();
@@ -146,14 +146,14 @@ private class LoggerTest {
     @IsTest 
     static void shouldLogWithOptionalArguments() {
         System.LoggingLevel level = System.LoggingLevel.INFO;
-        LogSetting__c settings = LoggerTest.initActiveSettings(level);
+        LogSetting__c settings = LogTestUtils.enableLogging(level);
         Type apexClass = LoggerTest.class;
-        Id recordId = UserInfo.getUserId();
+        User me = new User(Id = UserInfo.getUserId());
         String source = 'foo';
         String logMsg = 'This is a test';
         Logger myLogger = new Logger()
-            ?.setApexClass(apexClass)
-            ?.setRecordId(recordId)
+            ?.setLoggedFrom(apexClass)
+            ?.setRelatedRecordId(me)
             ?.setSource(source);
 
         Test.startTest();
@@ -163,14 +163,14 @@ private class LoggerTest {
         Assert.areEqual(1, Logger.pendingLogs?.size(), 'Wrong # of Logs');
         // Only this test - assert that fields are mapped correctly
         Log__c log = Logger.pendingLogs[0];
-        Assert.areEqual(apexClass?.getName(), log?.ApexClass__c, 'Wrong Apex Class');
+        Assert.areEqual(apexClass?.getName(), log?.LoggedFrom__c, 'Wrong Logged From');
         Assert.areEqual(logMsg, log?.Body__c, 'Wrong Log');
         Assert.isNotNull(log?.Context__c, 'Missing Context');
         Assert.areEqual(level?.name(), log?.Level__c, 'Wrong Level');
         Assert.isNotNull(log?.LoggedAt__c, 'Missing Logged At');
         Assert.areEqual(UserInfo.getUserId(), log?.LoggedBy__c, 'Wrong Logged By');
         Assert.areEqual(1, log?.Ordinal__c, 'Wrong Ordinal');
-        Assert.areEqual(recordId, log?.RelatedRecordId__c, 'Wrong Related Record Id');
+        Assert.areEqual(me?.Id, log?.RelatedRecordId__c, 'Wrong Related Record Id');
         Assert.areEqual(source, log?.Source__c, 'Wrong Source');
         Assert.isNotNull(log?.StackTrace__c, 'Missing Stack Trace');
         Assert.isNotNull(log?.Transaction__c, 'Missing Transaction'); 
@@ -178,7 +178,7 @@ private class LoggerTest {
 
     @IsTest 
     static void shouldLogUsingShorthandOverloads() {
-        LogSetting__c settings = LoggerTest.initActiveSettings(System.LoggingLevel.FINEST);
+        LogSetting__c settings = LogTestUtils.enableLogging(System.LoggingLevel.FINEST);
         String logMsg = 'This is a test';
 
         Test.startTest();
@@ -243,7 +243,7 @@ private class LoggerTest {
     @IsTest 
     static void shouldHandleIllegalPublisherValue() {
         // If Publisher__c is set, but isn't a valid Logger.LogPublisher, should use the default publisher
-        LogSetting__c settings = LoggerTest.initActiveSettings(System.LoggingLevel.FINEST);
+        LogSetting__c settings = LogTestUtils.enableLogging(System.LoggingLevel.FINEST);
         settings.Publisher__c = 'abc123'; // Not a real publisher
         update settings;
 
@@ -277,7 +277,7 @@ private class LoggerTest {
         // The logger should abbreviate any user-set String variables if they exceed their fields' length,
         // Note: This also applies to stack trace - which isn't set by the user, but it's much harder to test for this, 
         // since you cannot manually set an Exception's stack trace string value
-        LogSetting__c settings = LoggerTest.initActiveSettings(System.LoggingLevel.FINEST);
+        LogSetting__c settings = LogTestUtils.enableLogging(System.LoggingLevel.FINEST);
         Integer badLen = 150000; // No Salesforce field supports this # of characters!
 
         Test.startTest();
@@ -314,15 +314,6 @@ private class LoggerTest {
         );
         insert user;
         return user;
-    }
-    static LogSetting__c initActiveSettings(System.LoggingLevel level) {
-        LogSetting__c settings = new LogSetting__c(
-            Enabled__c = true, 
-            SetupOwnerId = UserInfo.getUserId(),
-            Threshold__c = level?.name()
-        );
-        insert settings;
-        return settings;
     }
 
     // **** INNER **** // 

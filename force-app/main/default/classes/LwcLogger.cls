@@ -5,24 +5,14 @@ global abstract class LwcLogger {
     global static void log(String payload) {
         try {
             // Expects a serialized JSON representation of a LwcLogger.Input object
-            Input input = (Input) JSON.deserialize(payload, Input.class); 
+            LogInput input = (LogInput) JSON.deserialize(payload, LogInput.class); 
             input?.log();
+            // Each call from LWC -> Apex happens in its own transaction. 
+            // No need to separate log/publish logic into separate calls. 
+            new Logger()?.publish();
         } catch (Exception anyError) {
             String msg = anyError?.getMessage(); 
             throw new AuraHandledException(msg); 
-        }
-    }
-
-    @TestVisible
-    private class Input {
-        public String body;
-        public System.LoggingLevel level; 
-        public String relatedRecordId;
-        public String source;
-        
-        private void log() {
-            Id recordId = (this.relatedRecordId instanceOf Id) ? this.relatedRecordId : null;
-            new Logger()?.setApexClass(LwcLogger.class)?.setRecordId(recordId)?.setSource(this.source)?.log(this.level, this.body)?.publish();
         }
     }
 }
