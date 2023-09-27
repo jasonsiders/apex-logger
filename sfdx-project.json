@@ -5,7 +5,7 @@
 			"default": true
 		}
 	],
-	"name": "lumio-logger",
+	"name": "apex-logger",
 	"namespace": "",
 	"sfdcLoginUrl": "https://login.salesforce.com",
 	"sourceApiVersion": "58.0"

@@ -1,18 +1,11 @@
-# Salesforce DX Project: Next Steps
+# apex-logger
+TODO!
 
-Now that you’ve created a Salesforce DX project, what’s next? Here are some documentation resources to get you started.
+`apex-logger` is available as an unlocked package. Before installing, you must first install the dependencies listed in [`sfdx-project.json`](/sfdx-project.json).
 
-## How Do You Plan to Deploy Your Changes?
+Once all dependencies have been installed, run this command in conjunction with the latest [Release's](https://github.com/jasonsiders/apex-logger/releases/latest) package version Id (`04t...`):
+```
+sf package install -p {package_version_id}
+```
 
-Do you want to deploy a set of changes, or create a self-contained application? Choose a [development model](https://developer.salesforce.com/tools/vscode/en/user-guide/development-models).
-
-## Configure Your Salesforce DX Project
-
-The `sfdx-project.json` file contains useful configuration information for your project. See [Salesforce DX Project Configuration](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_ws_config.htm) in the _Salesforce DX Developer Guide_ for details about this file.
-
-## Read All About It
-
--   [Salesforce Extensions Documentation](https://developer.salesforce.com/tools/vscode/)
--   [Salesforce CLI Setup Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_setup_intro.htm)
--   [Salesforce DX Developer Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_intro.htm)
--   [Salesforce CLI Command Reference](https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference.htm)
+For full details, refer to the [docs](/docs/) directory.
