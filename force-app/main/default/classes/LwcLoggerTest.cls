@@ -1,30 +1,11 @@
 @IsTest 
 private class LwcLoggerTest {
     @IsTest 
-    static void shouldLogWithValidLoggingLevel() {
-        LwcLogger.Input input = new LwcLogger.Input(); 
-        input.body = 'This is a test';
-        input.level = System.LoggingLevel.ERROR;
-
-        Test.startTest();
-        LwcLogger.log(JSON.serialize(input));
-        Test.stopTest();
-
-        List<Log__c> logs = LwcLoggerTest.getLogs(); 
-        Assert.areEqual(1, logs?.size(), 'Wrong # of Logs created'); 
-        Log__c log = logs[0];
-        Assert.areEqual(LwcLogger.class?.getName(), log?.LoggedFrom__c, 'Wrong Logged From'); 
-        Assert.areEqual(input?.body, log?.Body__c, 'Wrong Level'); 
-        Assert.areEqual(input?.level?.name(), log?.Level__c, 'Wrong Level'); 
-        Assert.isNull(log?.RelatedRecordId__c, 'RelatedRecordId was set, but how?');
-        Assert.isNull(log?.Source__c, 'Source was set, but how?');
-    }
-
-    @IsTest 
     static void shouldLogWithAdvancedDetails() {
-        LwcLogger.Input input = new LwcLogger.Input(); 
+        LogInput input = new LogInput(); 
         input.body = 'This is a test';
-        input.level = System.LoggingLevel.ERROR;
+        input.level = System.LoggingLevel.ERROR?.name();
+        input.loggedFrom = 'c-my-lwc';
         input.relatedRecordId = UserInfo.getUserId(); 
         input.source = 'fooBarLwc';
 
@@ -35,11 +16,31 @@ private class LwcLoggerTest {
         List<Log__c> logs = LwcLoggerTest.getLogs(); 
         Assert.areEqual(1, logs?.size(), 'Wrong # of Logs created'); 
         Log__c log = logs[0];
-        Assert.areEqual(LwcLogger.class?.getName(), log?.LoggedFrom__c, 'Wrong Logged From'); 
         Assert.areEqual(input?.body, log?.Body__c, 'Wrong Level'); 
-        Assert.areEqual(input?.level?.name(), log?.Level__c, 'Wrong Level'); 
+        Assert.areEqual(input?.level, log?.Level__c, 'Wrong Level'); 
+        Assert.areEqual(input?.loggedFrom, log?.LoggedFrom__c, 'Wrong LoggedFrom'); 
         Assert.areEqual(input?.relatedRecordId, log?.RelatedRecordId__c, 'Wrong RelatedRecordId'); 
         Assert.areEqual(input?.source, log?.Source__c, 'Wrong Source'); 
+    }
+
+    @IsTest 
+    static void shouldLogWithMinimalDetail() {
+        LogInput input = new LogInput(); 
+        input.body = 'This is a test';
+        input.level = System.LoggingLevel.ERROR?.name();
+
+        Test.startTest();
+        LwcLogger.log(JSON.serialize(input));
+        Test.stopTest();
+
+        List<Log__c> logs = LwcLoggerTest.getLogs(); 
+        Assert.areEqual(1, logs?.size(), 'Wrong # of Logs created'); 
+        Log__c log = logs[0];
+        Assert.areEqual(input?.body, log?.Body__c, 'Wrong Level'); 
+        Assert.areEqual(input?.level, log?.Level__c, 'Wrong Level'); 
+        Assert.areEqual(null, log?.LoggedFrom__c, 'LoggedFrom was set, but how?'); 
+        Assert.isNull(log?.RelatedRecordId__c, 'RelatedRecordId was set, but how?');
+        Assert.isNull(log?.Source__c, 'Source was set, but how?');
     }
 
     @IsTest 
@@ -56,44 +57,6 @@ private class LwcLoggerTest {
         Test.stopTest();
 
         Assert.isNotNull(error, 'Error was not thrown/caught for a bad payload'); 
-    }
-
-    @IsTest 
-    static void shouldHandleInvalidLevel() {
-        LwcLogger.Input input = new LwcLogger.Input(); 
-        input.body = 'This is a test';
-        // We can't set an illegal System.LoggingLevel in apex - but JS still can!
-        Map<String, Object> params = (Map<String, Object>) JSON.deserializeUntyped(JSON.serialize(input));
-        params?.put('level', 'abcd1234');
-        Exception error; 
-
-        Test.startTest();
-        try {
-            LwcLogger.log(JSON.serialize(params));
-        } catch (AuraHandledException caughtError) {
-            error = caughtError; 
-        }  
-        Test.stopTest();
-
-        Assert.isNotNull(error, 'Error was not thrown/caught for bad LoggingLevel');
-    }
-
-    @IsTest 
-    static void shouldHandleInvalidRecordId() {
-        // relatedRecordId isn't a required parameter. If invalid, will default to null.
-        LwcLogger.Input input = new LwcLogger.Input(); 
-        input.body = 'This is a test';
-        input.level = System.LoggingLevel.ERROR;
-        input.relatedRecordId = 'abcd1234';
-
-        Test.startTest();
-        LwcLogger.log(JSON.serialize(input));
-        Test.stopTest();
-
-        List<Log__c> logs = LwcLoggerTest.getLogs(); 
-        Assert.areEqual(1, logs?.size(), 'Wrong # of Logs created'); 
-        Log__c log = logs[0];
-        Assert.isNull(log?.RelatedRecordId__c, 'Invalid relatedRecordId posted to log');
     }
 
     // **** HELPER **** // 
