@@ -13,7 +13,7 @@ private class LoggerTest {
         Assert.areEqual(1, Logger.pendingLogs?.size(), 'Wrong # of Logs');
         // Only this test - assert that fields are mapped correctly
         Log__c log = Logger.pendingLogs[0];
-        Assert.isNull(log?.ApexClass__c, 'Has Apex Class, but one wasn\'t set');
+        Assert.isNull(log?.LoggedFrom__c, 'Has Logged From, but one wasn\'t set');
         Assert.areEqual(logMsg, log?.Body__c, 'Wrong Log');
         Assert.isNotNull(log?.Context__c, 'Missing Context');
         Assert.areEqual(level?.name(), log?.Level__c, 'Wrong Level');
@@ -152,7 +152,7 @@ private class LoggerTest {
         String source = 'foo';
         String logMsg = 'This is a test';
         Logger myLogger = new Logger()
-            ?.setApexClass(apexClass)
+            ?.setLoggedFrom(apexClass)
             ?.setRecordId(recordId)
             ?.setSource(source);
 
@@ -163,7 +163,7 @@ private class LoggerTest {
         Assert.areEqual(1, Logger.pendingLogs?.size(), 'Wrong # of Logs');
         // Only this test - assert that fields are mapped correctly
         Log__c log = Logger.pendingLogs[0];
-        Assert.areEqual(apexClass?.getName(), log?.ApexClass__c, 'Wrong Apex Class');
+        Assert.areEqual(apexClass?.getName(), log?.LoggedFrom__c, 'Wrong Logged From');
         Assert.areEqual(logMsg, log?.Body__c, 'Wrong Log');
         Assert.isNotNull(log?.Context__c, 'Missing Context');
         Assert.areEqual(level?.name(), log?.Level__c, 'Wrong Level');

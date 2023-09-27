@@ -38,7 +38,7 @@
         <layoutColumns>
             <layoutItems>
                 <behavior>Readonly</behavior>
-                <field>ApexClass__c</field>
+                <field>LoggedFrom__c</field>
             </layoutItems>
             <layoutItems>
                 <behavior>Readonly</behavior>

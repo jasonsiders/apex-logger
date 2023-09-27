@@ -21,8 +21,14 @@ global abstract class LwcLogger {
         public String source;
         
         private void log() {
+            // No need to separate log / publish logic; each call from LWC -> Apex happens in its own transaction
             Id recordId = (this.relatedRecordId instanceOf Id) ? this.relatedRecordId : null;
-            new Logger()?.setApexClass(LwcLogger.class)?.setRecordId(recordId)?.setSource(this.source)?.log(this.level, this.body)?.publish();
+            new Logger()   
+                ?.setLoggedFrom(LwcLogger.class)
+                ?.setRecordId(recordId)
+                ?.setSource(this.source)
+                ?.log(this.level, this.body)
+                ?.publish();
         }
     }
 }

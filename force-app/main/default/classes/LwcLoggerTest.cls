@@ -13,7 +13,7 @@ private class LwcLoggerTest {
         List<Log__c> logs = LwcLoggerTest.getLogs(); 
         Assert.areEqual(1, logs?.size(), 'Wrong # of Logs created'); 
         Log__c log = logs[0];
-        Assert.areEqual(LwcLogger.class?.getName(), log?.ApexClass__c, 'Wrong Apex Class'); 
+        Assert.areEqual(LwcLogger.class?.getName(), log?.LoggedFrom__c, 'Wrong Logged From'); 
         Assert.areEqual(input?.body, log?.Body__c, 'Wrong Level'); 
         Assert.areEqual(input?.level?.name(), log?.Level__c, 'Wrong Level'); 
         Assert.isNull(log?.RelatedRecordId__c, 'RelatedRecordId was set, but how?');
@@ -35,7 +35,7 @@ private class LwcLoggerTest {
         List<Log__c> logs = LwcLoggerTest.getLogs(); 
         Assert.areEqual(1, logs?.size(), 'Wrong # of Logs created'); 
         Log__c log = logs[0];
-        Assert.areEqual(LwcLogger.class?.getName(), log?.ApexClass__c, 'Wrong Apex Class'); 
+        Assert.areEqual(LwcLogger.class?.getName(), log?.LoggedFrom__c, 'Wrong Logged From'); 
         Assert.areEqual(input?.body, log?.Body__c, 'Wrong Level'); 
         Assert.areEqual(input?.level?.name(), log?.Level__c, 'Wrong Level'); 
         Assert.areEqual(input?.relatedRecordId, log?.RelatedRecordId__c, 'Wrong RelatedRecordId'); 
@@ -108,6 +108,6 @@ private class LwcLoggerTest {
     }
 
     static List<Log__c> getLogs() {
-        return [SELECT Id, ApexClass__c, Body__c, Level__c, RelatedRecordId__c, Source__c FROM Log__c];
+        return [SELECT Id, LoggedFrom__c, Body__c, Level__c, RelatedRecordId__c, Source__c FROM Log__c];
     }
 }

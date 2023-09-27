@@ -13,7 +13,7 @@ private class InvocableLoggerTest {
         List<Log__c> logs = Logger.pendingLogs; 
         Assert.areEqual(1, logs?.size(), 'Wrong # of Logs created'); 
         Log__c log = logs[0];
-        Assert.areEqual(InvocableLogger.class?.getName(), log?.ApexClass__c, 'Wrong Apex Class'); 
+        Assert.areEqual(InvocableLogger.class?.getName(), log?.LoggedFrom__c, 'Wrong Logged From'); 
         Assert.areEqual(input?.body, log?.Body__c, 'Wrong Level'); 
         Assert.areEqual(input?.level, log?.Level__c, 'Wrong Level'); 
         Assert.isNull(log?.RelatedRecordId__c, 'RelatedRecordId was set, but how?');
@@ -35,7 +35,7 @@ private class InvocableLoggerTest {
         List<Log__c> logs = Logger.pendingLogs; 
         Assert.areEqual(1, logs?.size(), 'Wrong # of Logs created'); 
         Log__c log = logs[0];
-        Assert.areEqual(InvocableLogger.class?.getName(), log?.ApexClass__c, 'Wrong Apex Class'); 
+        Assert.areEqual(InvocableLogger.class?.getName(), log?.LoggedFrom__c, 'Wrong Logged From'); 
         Assert.areEqual(input?.body, log?.Body__c, 'Wrong Level'); 
         Assert.areEqual(input?.level, log?.Level__c, 'Wrong Level'); 
         Assert.areEqual(input?.relatedRecordId, log?.RelatedRecordId__c, 'Wrong RelatedRecordId'); 

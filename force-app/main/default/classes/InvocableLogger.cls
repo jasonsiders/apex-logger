@@ -24,7 +24,7 @@ global abstract class InvocableLogger {
 			System.LoggingLevel level = this.getLevel();
             Id relatedRecordId = this.getRelatedRecordId();
             new Logger()
-                ?.setApexClass(InvocableLogger.class)
+                ?.setLoggedFrom(InvocableLogger.class)
                 ?.setRecordId(relatedRecordId)
                 ?.setSource(this.source)
                 ?.log(level, this.body);
