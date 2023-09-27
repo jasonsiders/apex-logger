@@ -23,7 +23,7 @@ global abstract class InvocableLogger {
         @InvocableVariable 
         global String source;
 
-		public void log() {
+		private void log() {
 			System.LoggingLevel level = this.getLevel();
             new Logger()
                 ?.setApexClass(InvocableLogger.class)
