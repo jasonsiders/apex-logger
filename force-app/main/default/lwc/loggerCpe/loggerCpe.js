@@ -3,19 +3,17 @@ import {
 	CustomPropertyEditor,
 	DataTypes,
 	Error,
-	TypeChangedEvent,
 	ValueChangedEvent,
-	ValueDeletedEvent
 } from "c/customPropertyEditor";
 
 const InvocableVariables = {
 	BODY: "body",
 	LEVEL: "level",
+	LOGGED_FROM: "loggedFrom",
 	SOURCE: "source"
 };
 
-// This is the absolute max for all long-text area fields in SFDC
-const MAX_LENGTH = 131072;
+const MAX_LENGTH = 100000;
 
 const LEVEL_OPTIONS = [
 	{ label: "FINEST", value: "FINEST" },
@@ -28,11 +26,9 @@ const LEVEL_OPTIONS = [
 ];
 
 export default class CpeLogger extends CustomPropertyEditor {
-	bodyVariable = InvocableVariables.BODY;
+	invocableVars = InvocableVariables;
 	levelOptions = LEVEL_OPTIONS;
-	levelVariable = InvocableVariables.LEVEL;
 	maxLength = MAX_LENGTH;
-	sourceVariable = InvocableVariables.SOURCE;
 
 	@api validate() {
 		let errors = [];
@@ -47,11 +43,11 @@ export default class CpeLogger extends CustomPropertyEditor {
 	}
 
 	get bodyValue() {
-		return this.getInvocableVariable(this.bodyVariable)?.value;
+		return this.getInvocableVariable(InvocableVariables.BODY)?.value;
 	}
 
 	get sourceValue() {
-		return this.getInvocableVariable(this.sourceVariable)?.value;
+		return this.getInvocableVariable(InvocableVariables.SOURCE)?.value;
 	}
 
 	handleChange(event) {
