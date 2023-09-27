@@ -6,14 +6,15 @@ import {
 	ValueChangedEvent,
 } from "c/customPropertyEditor";
 
-const InvocableVariables = {
+// TODO: Replace this with a real description!
+const DESCRIPTION = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.';
+const INVOCABLE_VARS = {
 	BODY: "body",
 	LEVEL: "level",
 	LOGGED_FROM: "loggedFrom",
 	RELATED_RECORD: "relatedRecordId",
 	SOURCE: "source"
 };
-
 const LEVEL_OPTIONS = [
 	{ label: "FINEST", value: "FINEST" },
 	{ label: "FINER", value: "FINER" },
@@ -25,7 +26,8 @@ const LEVEL_OPTIONS = [
 ];
 
 export default class CpeLogger extends CustomPropertyEditor {
-	invocableVars = InvocableVariables;
+	description = DESCRIPTION;
+	invocableVars = INVOCABLE_VARS;
 	levelOptions = LEVEL_OPTIONS;
 
 	@api validate() {
@@ -41,23 +43,23 @@ export default class CpeLogger extends CustomPropertyEditor {
 	}
 
 	get body() {
-		return this.getInvocableVariable(InvocableVariables.BODY)?.value;
+		return this.getInvocableVariable(this.invocableVars?.BODY)?.value;
 	}
 
 	get level() {
-		return this.getInvocableVariable(InvocableVariables.LEVEL)?.value;
+		return this.getInvocableVariable(this.invocableVars?.LEVEL)?.value;
 	}
 
 	get loggedFrom() {
-		return this.getInvocableVariable(InvocableVariables.LOGGED_FROM)?.value;
+		return this.getInvocableVariable(this.invocableVars?.LOGGED_FROM)?.value;
 	}
 
 	get relatedRecordId() {
-		return this.getInvocableVariable(InvocableVariables.RELATED_RECORD)?.value;
+		return this.getInvocableVariable(this.invocableVars?.RELATED_RECORD)?.value;
 	}
 
 	get source() {
-		return this.getInvocableVariable(InvocableVariables.SOURCE)?.value;
+		return this.getInvocableVariable(this.invocableVars?.SOURCE)?.value;
 	}
 
 	handleChange(event) {
