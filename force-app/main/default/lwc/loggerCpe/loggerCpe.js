@@ -1,8 +1,6 @@
 import { LightningElement, api } from "lwc";
 
-// TODO: Add real copy
-const DESCRIPTION = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.";
-// Maps to the expected @InvocableVariable names from the LogInput class
+// Maps to @InvocableVariable names from the LogInput class
 const INVOCABLE_VARS = {
 	BODY: "body",
 	LEVEL: "level",
@@ -23,7 +21,6 @@ const LEVEL_OPTIONS = [
 
 export default class LoggerCpe extends LightningElement {
 	@api inputVariables;
-	description = DESCRIPTION;
 	invocableVars = INVOCABLE_VARS;
 	levelOptions = LEVEL_OPTIONS;
 
