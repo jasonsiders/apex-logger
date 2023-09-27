@@ -38,7 +38,7 @@ private class LwcLoggerTest {
         Log__c log = logs[0];
         Assert.areEqual(input?.body, log?.Body__c, 'Wrong Level'); 
         Assert.areEqual(input?.level, log?.Level__c, 'Wrong Level'); 
-        Assert.areEqual(null, log?.LoggedFrom__c, 'LoggedFrom was set, but how?'); 
+        Assert.isNull(log?.LoggedFrom__c, 'LoggedFrom was set, but how?'); 
         Assert.isNull(log?.RelatedRecordId__c, 'RelatedRecordId was set, but how?');
         Assert.isNull(log?.Source__c, 'Source was set, but how?');
     }
