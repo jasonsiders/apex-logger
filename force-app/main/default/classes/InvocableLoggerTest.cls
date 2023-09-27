@@ -1,78 +1,46 @@
 @IsTest 
 private class InvocableLoggerTest {
     @IsTest 
-    static void shouldLogWithValidLoggingLevel() {
-        InvocableLogger.Input input = new InvocableLogger.Input(); 
-        input.body = 'This is a test';
-        input.level = System.LoggingLevel.ERROR.name();
-
-        Test.startTest();
-        InvocableLogger.invoke(new List<InvocableLogger.Input>{input});
-        Test.stopTest();
-
-        List<Log__c> logs = Logger.pendingLogs; 
-        Assert.areEqual(1, logs?.size(), 'Wrong # of Logs created'); 
-        Log__c log = logs[0];
-        Assert.areEqual(InvocableLogger.class?.getName(), log?.LoggedFrom__c, 'Wrong Logged From'); 
-        Assert.areEqual(input?.body, log?.Body__c, 'Wrong Level'); 
-        Assert.areEqual(input?.level, log?.Level__c, 'Wrong Level'); 
-        Assert.isNull(log?.RelatedRecordId__c, 'RelatedRecordId was set, but how?');
-        Assert.isNull(log?.Source__c, 'Source was set, but how?');
-    }
-
-    @IsTest 
     static void shouldLogWithAdvancedDetails() {
-        InvocableLogger.Input input = new InvocableLogger.Input(); 
+        LogInput input = new LogInput(); 
         input.body = 'This is a test';
         input.level = System.LoggingLevel.ERROR.name();
+        input.loggedFrom = 'My_Flow';
         input.relatedRecordId = UserInfo.getUserId(); 
         input.source = 'fooBarFlow';
 
         Test.startTest();
-        InvocableLogger.invoke(new List<InvocableLogger.Input>{input});
+        InvocableLogger.invoke(new List<LogInput>{input});
         Test.stopTest();
 
         List<Log__c> logs = Logger.pendingLogs; 
         Assert.areEqual(1, logs?.size(), 'Wrong # of Logs created'); 
         Log__c log = logs[0];
-        Assert.areEqual(InvocableLogger.class?.getName(), log?.LoggedFrom__c, 'Wrong Logged From'); 
         Assert.areEqual(input?.body, log?.Body__c, 'Wrong Level'); 
         Assert.areEqual(input?.level, log?.Level__c, 'Wrong Level'); 
+        Assert.areEqual(input?.loggedFrom, log?.LoggedFrom__c, 'Wrong LoggedFrom'); 
         Assert.areEqual(input?.relatedRecordId, log?.RelatedRecordId__c, 'Wrong RelatedRecordId'); 
         Assert.areEqual(input?.source, log?.Source__c, 'Wrong Source'); 
     }
 
     @IsTest 
-    static void shouldHandleInvalidLevel() {
-        // If an invlaid logging level is given, will default to NONE
-        InvocableLogger.Input input = new InvocableLogger.Input(); 
+    static void shouldLogWithMinimalDetail() {
+        LogInput input = new LogInput(); 
         input.body = 'This is a test';
-        input.level = 'abc123';
+        input.level = System.LoggingLevel.ERROR.name();
 
         Test.startTest();
-        InvocableLogger.invoke(new List<InvocableLogger.Input>{input});
+        InvocableLogger.invoke(new List<LogInput>{input});
         Test.stopTest();
 
         List<Log__c> logs = Logger.pendingLogs; 
-        Assert.areEqual(0, logs?.size(), 'Wrong # of logs created');
-    }
-
-    @IsTest 
-    static void shouldHandleInvalidRecordId() {
-        // relatedRecordId isn't a required parameter. If invalid, will default to null.
-        InvocableLogger.Input input = new InvocableLogger.Input(); 
-        input.body = 'This is a test';
-        input.level = System.LoggingLevel.ERROR?.name();
-        input.relatedRecordId = 'abcd1234';
-
-        Test.startTest();
-        InvocableLogger.invoke(new List<InvocableLogger.Input>{input});
-        Test.stopTest();
-
-        List<Log__c> logs = Logger.pendingLogs;
         Assert.areEqual(1, logs?.size(), 'Wrong # of Logs created'); 
         Log__c log = logs[0];
-        Assert.isNull(log?.RelatedRecordId__c, 'Invalid relatedRecordId posted to log');
+        Assert.areEqual(input?.body, log?.Body__c, 'Wrong Level'); 
+        Assert.areEqual(input?.level, log?.Level__c, 'Wrong Level'); 
+        Assert.isNull(log?.LoggedFrom__c, 'LoggedFrom was set, but how?'); 
+        Assert.isNull(log?.RelatedRecordId__c, 'RelatedRecordId was set, but how?');
+        Assert.isNull(log?.Source__c, 'Source was set, but how?');
     }
 
     // **** HELPER **** //
