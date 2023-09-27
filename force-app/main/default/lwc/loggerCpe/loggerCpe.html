@@ -9,20 +9,27 @@
 				<c-cpe-combobox
 					input-variables={inputVariables}
 					invocable-variable={levelVariable}
-					label="Log Level"
+					label="Level"
 					name={levelVariable}
 					onchange={handleChange}
 					options={levelOptions}
 					required
 				></c-cpe-combobox>
 				<lightning-textarea
-					label="Log Message"
+					label="Body"
 					max-length={maxLength}
 					name={bodyVariable}
 					onchange={handleChange}
-					value={messageValue}
+					value={bodyValue}
 					required
 				></lightning-textarea>
+				<lightning-input
+					label="Source"
+					name={sourceVariable}
+					onchange={handleChange}
+					value={sourceValue}
+					type="text"
+				></lightning-input>
 			</div>
 		</lightning-card>
 	</div>
