@@ -25,7 +25,7 @@ global abstract class InvocableLogger {
             Id relatedRecordId = this.getRelatedRecordId();
             new Logger()
                 ?.setLoggedFrom(InvocableLogger.class)
-                ?.setRecordId(relatedRecordId)
+                ?.setRelatedRecordId(relatedRecordId)
                 ?.setSource(this.source)
                 ?.log(level, this.body);
 		}

@@ -148,12 +148,12 @@ private class LoggerTest {
         System.LoggingLevel level = System.LoggingLevel.INFO;
         LogSetting__c settings = LoggerTest.initActiveSettings(level);
         Type apexClass = LoggerTest.class;
-        Id recordId = UserInfo.getUserId();
+        User me = new User(Id = UserInfo.getUserId());
         String source = 'foo';
         String logMsg = 'This is a test';
         Logger myLogger = new Logger()
             ?.setLoggedFrom(apexClass)
-            ?.setRecordId(recordId)
+            ?.setRelatedRecordId(me)
             ?.setSource(source);
 
         Test.startTest();
@@ -170,7 +170,7 @@ private class LoggerTest {
         Assert.isNotNull(log?.LoggedAt__c, 'Missing Logged At');
         Assert.areEqual(UserInfo.getUserId(), log?.LoggedBy__c, 'Wrong Logged By');
         Assert.areEqual(1, log?.Ordinal__c, 'Wrong Ordinal');
-        Assert.areEqual(recordId, log?.RelatedRecordId__c, 'Wrong Related Record Id');
+        Assert.areEqual(me?.Id, log?.RelatedRecordId__c, 'Wrong Related Record Id');
         Assert.areEqual(source, log?.Source__c, 'Wrong Source');
         Assert.isNotNull(log?.StackTrace__c, 'Missing Stack Trace');
         Assert.isNotNull(log?.Transaction__c, 'Missing Transaction'); 

@@ -96,13 +96,13 @@ global without sharing virtual class Logger {
         return this.setLoggedFrom(apexClass?.getName()); 
     }
 
-    global Logger setRecordId(Id recordId) {
+    global Logger setRelatedRecordId(Id recordId) {
         this.relatedRecordId = recordId; 
         return this; 
     }
 
-    global Logger setRecordId(SObject record) {
-        return this.setRecordId(record?.Id);
+    global Logger setRelatedRecordId(SObject record) {
+        return this.setRelatedRecordId(record?.Id);
     }
 
     global Logger setSource(String source) {

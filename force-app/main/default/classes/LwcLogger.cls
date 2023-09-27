@@ -25,7 +25,7 @@ global abstract class LwcLogger {
             Id recordId = (this.relatedRecordId instanceOf Id) ? this.relatedRecordId : null;
             new Logger()   
                 ?.setLoggedFrom(LwcLogger.class)
-                ?.setRecordId(recordId)
+                ?.setRelatedRecordId(recordId)
                 ?.setSource(this.source)
                 ?.log(this.level, this.body)
                 ?.publish();
