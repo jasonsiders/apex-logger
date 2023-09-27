@@ -17,7 +17,7 @@
 				></c-cpe-combobox>
 				<lightning-textarea
 					label="Body"
-					max-length={maxLength}
+					max-length="100000"
 					name={invocableVars.BODY}
 					onchange={handleChange}
 					value={body}
@@ -28,6 +28,13 @@
 					name={invocableVars.LOGGED_FROM}
 					onchange={handleChange}
 					value={loggedFrom}
+					type="text"
+				></lightning-input>
+				<lightning-input
+					label="Related Record Id"
+					name={invocableVars.RELATED_RECORD}
+					onchange={handleChange}
+					value={relatedRecordId}
 					type="text"
 				></lightning-input>
 				<lightning-input

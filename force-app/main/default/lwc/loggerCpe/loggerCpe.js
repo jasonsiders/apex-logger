@@ -10,10 +10,9 @@ const InvocableVariables = {
 	BODY: "body",
 	LEVEL: "level",
 	LOGGED_FROM: "loggedFrom",
+	RELATED_RECORD: "relatedRecordId",
 	SOURCE: "source"
 };
-
-const MAX_LENGTH = 100000;
 
 const LEVEL_OPTIONS = [
 	{ label: "FINEST", value: "FINEST" },
@@ -28,7 +27,6 @@ const LEVEL_OPTIONS = [
 export default class CpeLogger extends CustomPropertyEditor {
 	invocableVars = InvocableVariables;
 	levelOptions = LEVEL_OPTIONS;
-	maxLength = MAX_LENGTH;
 
 	@api validate() {
 		let errors = [];
@@ -48,6 +46,10 @@ export default class CpeLogger extends CustomPropertyEditor {
 
 	get loggedFrom() {
 		return this.getInvocableVariable(InvocableVariables.LOGGED_FROM)?.value;
+	}
+
+	get relatedRecordId() {
+		return this.getInvocableVariable(InvocableVariables.RELATED_RECORD)?.value;
 	}
 
 	get source() {
