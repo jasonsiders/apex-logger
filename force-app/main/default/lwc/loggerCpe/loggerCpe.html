@@ -6,15 +6,6 @@
 				<span class="slds-text-heading_medium slds-var-m-left_small">Post to Log</span>
 			</div>
 			<div lwc:if={invocableVars} class="slds-var-p-horizontal_small">
-				<c-cpe-combobox
-					input-variables={inputVariables}
-					invocable-variable={invocableVars.LEVEL}
-					label="Level"
-					name={invocableVars.LEVEL}
-					onchange={handleChange}
-					options={levelOptions}
-					required
-				></c-cpe-combobox>
 				<lightning-textarea
 					label="Body"
 					max-length="100000"
@@ -23,27 +14,42 @@
 					value={body}
 					required
 				></lightning-textarea>
-				<lightning-input
-					label="Flow Name"
-					name={invocableVars.LOGGED_FROM}
-					onchange={handleChange}
-					value={loggedFrom}
-					type="text"
-				></lightning-input>
-				<lightning-input
-					label="Related Record Id"
-					name={invocableVars.RELATED_RECORD}
-					onchange={handleChange}
-					value={relatedRecordId}
-					type="text"
-				></lightning-input>
-				<lightning-input
-					label="Source"
-					name={invocableVars.SOURCE}
-					onchange={handleChange}
-					value={source}
-					type="text"
-				></lightning-input>
+				<lightning-layout>
+					<lightning-layout-item>
+						<c-cpe-combobox
+							input-variables={inputVariables}
+							invocable-variable={invocableVars.LEVEL}
+							label="Level"
+							name={invocableVars.LEVEL}
+							onchange={handleChange}
+							options={levelOptions}
+							required
+						></c-cpe-combobox>
+						<lightning-input
+							label="Flow Name"
+							name={invocableVars.LOGGED_FROM}
+							onchange={handleChange}
+							value={loggedFrom}
+							type="text"
+						></lightning-input>
+					</lightning-layout-item>
+					<lightning-layout-item>
+						<lightning-input
+							label="Related Record Id"
+							name={invocableVars.RELATED_RECORD}
+							onchange={handleChange}
+							value={relatedRecordId}
+							type="text"
+						></lightning-input>
+						<lightning-input
+							label="Source"
+							name={invocableVars.SOURCE}
+							onchange={handleChange}
+							value={source}
+							type="text"
+						></lightning-input>
+					</lightning-layout-item>
+				</lightning-layout>
 			</div>
 		</lightning-card>
 	</div>
