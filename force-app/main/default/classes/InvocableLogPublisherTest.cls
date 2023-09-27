@@ -14,10 +14,6 @@ private class InvocableLogPublisherTest {
 
     @TestSetup 
     static void setup() {
-        insert new LogSetting__c(
-            Enabled__c = true,
-            SetupOwnerId = UserInfo.getUserId(),
-            Threshold__c = System.LoggingLevel.FINEST.name()
-        ); 
+        LogTestUtils.enableLogging(System.LoggingLevel.FINEST);
     }
 }

@@ -99,12 +99,7 @@ private class LwcLoggerTest {
     // **** HELPER **** // 
     @TestSetup
     static void setup() {
-        // Enable logging
-        insert new LogSetting__c(
-            Enabled__c = true, 
-            SetupOwnerId = UserInfo.getUserId(),
-            Threshold__c = System.LoggingLevel.FINEST.name()
-        ); 
+        LogTestUtils.enableLogging(System.LoggingLevel.FINEST);
     }
 
     static List<Log__c> getLogs() {
