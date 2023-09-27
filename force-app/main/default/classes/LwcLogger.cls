@@ -7,6 +7,8 @@ global abstract class LwcLogger {
             // Expects a serialized JSON representation of a LwcLogger.Input object
             LogInput input = (LogInput) JSON.deserialize(payload, LogInput.class); 
             input?.log();
+            // Each call from LWC -> Apex happens in its own transaction. 
+            // No need to separate log/publish logic into separate calls. 
             new Logger()?.publish();
         } catch (Exception anyError) {
             String msg = anyError?.getMessage(); 
