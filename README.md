@@ -1,37 +1,14 @@
 # apex-logger
-TODO!
+A straightforward logging utility for Apex, Flows, and Lightning Components. With its simplified interface, `apex-logger` streamlines the process of tracking crucial information, enabling developers to focus on what truly matters: crafting exceptional Salesforce solutions. 
 
-## Getting Started
-
-### Installation
-
-`apex-logger` is available as an unlocked package. Before installing the logger package, you must install the [`lwc-related-list`](https://github.com/jasonsiders/lwc-related-list) package. Run this command:
-```sh
-sfdx package install -p 04tDn0000011NQzIAM -w 5
-```
-
-Once installed, you are ready to install the logger package. Obtain the latest package version id (starting with `04t`) via the [Releases](https://github.com/jasonsiders/apex-logger/releases/latest) tab. Run this command to install the package to your environment. Replace 04t... with your desired package version Id:
-```sh
-sf package install -p 04t... -w 3
-```
-
-### Configuration
-To begin logging, you will need to create `LogSetting__c` records. You can do this in the UI, via _Setup > Custom Settings > Log Settings > Manage_. 
-
-Alternatively, you can run the included [setup script](scripts/shell/setup.sh). This will create Log Setting records for the org, system users that can't normally be accessed via the UI (like `Automated Process`), and yourself. 
-
-### Permissions
-Users do not need to have permissions to the Logger in order to use it. However, users do need access to the `Log__c` object and its fields in order to view log records in the UI. Use the `LogAccess` permission set to provision this access.
-
-If you choose to Log from Lightning Components, you will need to ensure that any users who interact with your component have access to the `LwcLogger` apex class. Use the `LogFromLightning` permission set to provision this access. 
 ## Usage
 Logging with `apex-logger` is a two-step process:
 
-1. **Generate Logs**. The `log()` method(s) - and equivalent Flow and Lightning Component functions generate content to be captured in `Log__c` records. All logs generated throughout a transaction are held in a static variable until published, or until the transaction concludes. 
-2. **Publish Logs**: The `publish()` method commits any pending logs generated to the database, in the `Log__c` SObject. Any unpublished logs at the end of the transaction will be lost. Since this will typically incur a DML statement, publish Logs sparingly, and never include `publish()` calls inside of a loop. 
+1. **Generate Logs**. Log information from Apex, Flows, or Lightning Components. All logs are held in a static variable until published, or until the transaction concludes. 
+2. **Publish Logs**: Commit any "pending" logs to the database as `Log__c` records. Any unpublished logs at the end of the transaction will be lost. 
 
 You can leverage this framework to generate Log messages from anywhere in Salesforce, including Apex, Flows, and Lightning Components.
-### In Apex
+### Logging From Apex
 In Apex, use the `Logger` class to construct, log, and publish Log messages. Logs are stored statically, across all instances of the `Logger` class. 
 
 #### Generate Logs
@@ -93,19 +70,19 @@ Logger.LogPublisher publisher = MyCustomPublisher();
 new Logger().publish(publisher);
 ``` 
 
-### In Flows
+### Logging From Flows
 To log from flow, use the included `Log` and `Publish Logs` invocable actions.
 
 #### The `Log` Invocable Action (`InvocableLogger`)
 ![The "Log" Invocable Action](/media/loginvocable.png)
-Generates a Log message, and stores it in memory. To insert the log, you must call the `Publish Logs` invocable action afterwards.
+Generates a Log message, and stores it in memory. To insert the log, call the `Publish Logs` invocable action afterwards.
 > Note: You can use flow variable notation (`{!myVar}`) to insert variables from your flow in the log body or other fields.
 
 #### The `Publish Logs` Invocable Action (`InvocableLogPublisher`)
 ![The "Publish Logs" Invocable Action](media/publishlogsinvocable.png) 
 Publishes any pending Logs, via a `publish()` call. It's not possible to specify the `LogPublisher` from this invocable action.
 
-### In Lightning Components
+### Logging From Lightning Components
 You can use this framework to log directly from custom LWCs. Simply import the `LwcLogger.log` module:
 ```js
 import doLog from "@salesforce/apex/LwcLogger.log";
@@ -143,13 +120,9 @@ You can also view logs related to a specific record via the `Related Logs` light
 ### The `Logger.LogPublisher` Interface
 The Logger uses a `LogPublisher` interface to define the logic for publishing logs. `apex-logger` ships with a built in publisher - `LogDmlPublisher`. This class inserts logs using traditional DML.
 
-You can also define your own publishing logic by creating a class which implements this interface:
+You can also define your own publishing logic by creating a class which implements this interface and its `publish()` method:
 ```java
-global class MyPublisher implements Logger.LogPublisher {
-    global void publish(List<Log__c> logs) {
-        // Publishing logic goes here!
-    }
-}
+void publish(List<Log__c> logs);
 ```
 
 You can specify which publisher to use via the `publish(Logger.LogPublisher)` method:
@@ -164,3 +137,30 @@ You can also specify a User's default Publisher class via the `LogSetting__c.Pub
 // Since a LogSetting__c.Publisher__c is defined, will use MyProcessor by default
 new Logger().finest('Hello world!').publish();
 ```
+
+## Getting Started
+
+### Installation
+
+`apex-logger` is available as an unlocked package. Before installing the logger package, install the [`lwc-related-list`](https://github.com/jasonsiders/lwc-related-list) package. Run this command:
+```sh
+sf package install -p 04tDn0000011NQzIAM -w 5
+```
+
+Once installed, you are ready to install the logger package. Obtain the latest package version id (starting with `04t`) via the [Releases](https://github.com/jasonsiders/apex-logger/releases/latest) tab. Run this command to install the package to your environment. Replace 04t... with your desired package version Id:
+```sh
+sf package install -p 04t... -w 3
+```
+
+### Setup
+To auto-generate Log Settings for yourself and standard system users (like `Automated Process`), as well as provision yourself the necessary permissions to view Log records, run the [`quickstart.sh`](/scipts/quickstart.sh) script in your terminal.
+
+#### Log Settings
+You can modify or manually create `LogSetting__c` records in the UI, via _Setup > Custom Settings > Log Settings > Manage_.
+
+#### Permissions
+The `LogAccess` and `LogFromLightning` permission sets can be assigned in the UI via _Setup > Permission Sets_.
+
+Users do not need to have any permissions to the Logger in order to use it. However, users do need access to the `Log__c` object and its fields in order to view log records in the UI. The `LogAccess` permission set can be used to provision this access. 
+
+The `LogFromLightning` permission set gives access to the `LwcLogger` class. This should be assigned to any users who might interact with Lightning Components that leverage the Logging framework.
