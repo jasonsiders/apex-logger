@@ -25,25 +25,24 @@ Users do not need to have permissions to the Logger in order to use it. However,
 
 If you choose to Log from Lightning Components, you will need to ensure that any users who interact with your component have access to the `LwcLogger` apex class. Use the `LogFromLightning` permission set to provision this access. 
 ## Usage
-### Logging
-Logging requires a two-step process:
+Logging with `apex-logger` is a two-step process:
 
 1. **Generate Logs**. The `log()` method(s) - and equivalent Flow and Lightning Component functions generate content to be captured in `Log__c` records. All logs generated throughout a transaction are held in a static variable until published, or until the transaction concludes. 
 2. **Publish Logs**: The `publish()` method commits any pending logs generated to the database, in the `Log__c` SObject. Any unpublished logs at the end of the transaction will be lost. Since this will typically incur a DML statement, publish Logs sparingly, and never include `publish()` calls inside of a loop. 
 
-You can leverage this framework to generate Log messages from anywhere in Salesforce, including Apex, Flows, and Lightning Components:
+You can leverage this framework to generate Log messages from anywhere in Salesforce, including Apex, Flows, and Lightning Components.
+### In Apex
+In Apex, use the `Logger` class to construct, log, and publish Log messages. Logs are stored statically, across all instances of the `Logger` class. 
 
-#### From Apex
-In Apex, use the `Logger` class to construct, log, and publish Log messages. All methods return a `Logger` instance, and can be chained together. You do not need to use the same `Logger` instance each time, since the instance references static variables shared across all instances.
+#### Generate Logs
 
-Use the `log()` method to generate Log messages. The `log()` method accepts the following parameters:
-- A [`System.LoggingLevel`](https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_enum_System_LoggingLevel.htm) value which indicates the severity of the message. Works in tandem with [Log Settings](#the-logsetting__c-custom-settings-object), to determine if the message should actually be logged.
-- An `Object` representing to the Log Message. The `String.valueOf` this parameter is stored in the `Body__c` field. 
-```
+Use the `log()` method to generate Log messages:
+
+```java
 Logger myLogger = new Logger().log(System.LoggingLevel.ERROR, 'Hello world!');
 ```
 
-You can also use overloads which set the `System.LoggingLevel` to the value matching the method name:
+You can also use level-specific overloads as shorthand:
 ```java
 // In order of most to least severe:
 new Logger().error('Hello world!');
@@ -55,28 +54,13 @@ new Logger().finer('Hello world!');
 new Logger().finest('Hello world!');
 ```
 
-Once logs have been generated, you can insert them into the database via the `publish()` method. This typically incurs a DML statement, unless there are no logs to insert.
-```java
-new Logger().finest('Hello world').publish();
-```
-Publishing behavior is governed by the `Logger.LogPublisher` interface. Read more about this interface [here](#the-loggerlogpublisher-interface).
+#### Optional: Add Additional Context
 
-By default, `Logger` will use the `Logger.LogPublisher` defined in the current user's `LogSetting__c.Publisher__c` field to handle publishing behavior. If no publisher is defined, the default behavior is for Logs to be inserted via a traditional `insert` DML statement. 
+The `Logger` class also provides methods used to add additional context to Logs:
+- `setLoggedFrom(Type/String)`: Sets the `LoggedFrom__c` field. In Apex, this should be the current Apex Class.
+- `setRelatedRecordId(SObject/Id)`: Sets the `RelatedRecordId__c` field, which allows the Log to be displayed on that record page if desired.
+- `setSource(String)`: Sets the `Source__c` field. This can be used to specify what generated the Log message in a way that's meaningful to your organization. For example, this could be the name of a managed package, or the business division that the code is running in.
 
-If you wish, you can define your own `Logger.LogPublisher` and use this method to override the user's specified `Publisher__c`:
-```java
-new Logger().finest('Hello world');
-Logger.LogPublisher publisher = MyCustomPublisher();
-// Pass the publisher as an argument to the publish method.
-// The Logger will use this publisher to publish the pending log(s)
-new Logger().publish(publisher);
-``` 
-The `Logger` class also provides a number of methods that allow you to add additional context to your Log messages:
-- `setLoggedFrom(Type/String)`: Sets the `LoggedFrom__c` field. In Apex, It's reccommended to list the name of the current Apex Class.
-- `setRelatedRecordId(SObject/Id)`: Sets the `RelatedRecordId__c` field, which represents a closely-related record. 
-- `setSource(String)`: Sets the `Source__c` field. This can be used to specify more broadly what generated the Log message. For example, the name of your managed package, or the business division. 
-
-These values are stored on the `Logger` object, and will apply to any logs generated by that Logger from that point forward:
 ```java
 Logger myLogger = new Logger()
     .setLoggedFrom(MyClass.class)
@@ -90,19 +74,38 @@ for (Integer i = 0; i < 200; i++) {
 new Logger().finest('Done logging');
 ```
 
-#### From Flow
+#### Publish Logs
+
+Once logs are generated, they will not be inserted until the `publish()` method is called:
+
+```java
+new Logger().finest('Hello world').publish();
+```
+Publishing behavior is governed by the `Logger.LogPublisher` interface. Read more about this interface [here](#the-loggerlogpublisher-interface).
+
+By default, `Logger` will use the `Logger.LogPublisher` defined in the current user's `LogSetting__c.Publisher__c` field to publish the Logs. If no publisher is defined, the default behavior is for Logs to be inserted via a traditional `insert` DML statement. 
+
+You can define your own `Logger.LogPublisher` and use this method to override the user's specified `Publisher__c`:
+```java
+new Logger().finest('Hello world');
+Logger.LogPublisher publisher = MyCustomPublisher();
+// The Logger will use this publisher to publish the pending log(s)
+new Logger().publish(publisher);
+``` 
+
+### In Flows
 To log from flow, use the included `Log` and `Publish Logs` invocable actions.
 
-**The `Log` Invocable Action (`InvocableLogger`)**
+#### The `Log` Invocable Action (`InvocableLogger`)
 ![The "Log" Invocable Action](/media/loginvocable.png)
 Generates a Log message, and stores it in memory. To insert the log, you must call the `Publish Logs` invocable action afterwards.
 > Note: You can use flow variable notation (`{!myVar}`) to insert variables from your flow in the log body or other fields.
 
-**The `Publish Logs` Invocable Action (`InvocableLogPublisher`)**
+#### The `Publish Logs` Invocable Action (`InvocableLogPublisher`)
 ![The "Publish Logs" Invocable Action](media/publishlogsinvocable.png) 
 Publishes any pending Logs, via a `publish()` call. It's not possible to specify the `LogPublisher` from this invocable action.
 
-#### From Lightning Components
+### In Lightning Components
 You can use this framework to log directly from custom LWCs. Simply import the `LwcLogger.log` module:
 ```js
 import doLog from "@salesforce/apex/LwcLogger.log";
@@ -124,40 +127,18 @@ doLog({ payload: JSON.stringify(logInput) });
 Since each Apex call from LWC is its own discrete transaction, the `LwcLogger.log()` method handles both logging & publishing. It's not possible to specify the `LogPublisher` from this method.
 
 ### The `Log__c` Object
+Log details are stored in the `Log__c` custom object. Read more about this object and its fields [**here**](/docs/LOGOBJECT.md). 
 ![A Log Record](/media/logrecord.png)
 
-Log details are stored in the `Log__c` custom object. The object contains these fields:
-- **Body**: Displays the Log message.
-- **Context**: The [`System.Quiddity`](https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_enum_System_Quiddity.htm) of the current transaction. Ex., `ANONYMOUS`.
-- **Level**: Displays the severity of the Log, expressed as a [`System.LoggingLevel`](https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_enum_System_LoggingLevel.htm). Ex., `FINEST`.
-- **Logged At**: The Date/Time that the `log()` method was called. This may differ slightly from the `CreatedDate`. 
-- **Logged By**: The User who called the `log()` method. This may differ from the `CreatedById`, depending on the publishing method used.
-- **Logged From**: (Optional) Displays the name of the Apex Class, Flow, or Lightning Component which generated the Log, if provided.
-- **Ordinal**: Indicates the Log's index relative to other logs made in the same transaction. The first Log has an Ordinal of `1`, then `2`, `3`, and so on.
-- **Related Record**: (Optional) The Salesforce Id of a record deemed to be closely related to the Log, if provided.
-- **Source**: (Optional) Displays the package, division, or other user-defined "Source" of the Log.
-- **Stack Trace**: A stack trace string describing where the Log was generated.
-    > Note: This field will always be null when run in a managed package context. If using in a managed package, you can use `LoggedFrom__c` / `setLoggedFrom()` to provide at least some context.
-- **Transaction**: The [unique Id](https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_class_System_Request.htm#apex_System_Request_getRequestId) of the Apex transaction that generated the Log. 
-
 You can view Logs in the UI via the `Logs` tab:
-![Log List View](/media/loglistview.png) 
+![Log List View](/media/loglistview.png)  
 
 You can also view logs related to a specific record via the `Related Logs` lightning component:
-![Log Related List in the Builder](/media/logrelatedlist-1.png) 
-
-![Log Related List on a Record Page](/media/logrelatedlist-2.png) 
+![Log Related List in the Builder](/media/logrelatedlist.png) 
 
 ### The `LogSetting__c` Custom Settings Object
-`LogSetting__c` is a custom settings object used to control log enablement. Because this is a [Hierarchy Custom Settings](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_customsettings.htm) object, you have fine control over settings ranging from the whole organization, to profiles, to specific users. 
-
-At the beginning of each transaction, the framework will find the Log Setting record that matches their User. If one doesn't exist, it will find one based on their profile. If one doesn't exist, it will return the Organization-Wide Default Settings record. If that doesn't exist, the Logger will be disabled.
-
-![The Log Setting Object](media/logsetting.png)
-The `LogSetting__c` object contains these fields:
-- **Enabled**: When checked, Logging is enabled for this User/Profile/Org. 
-- **Publisher**: The fully-qualified API name of an Apex Class that implements the `Logger.LogPublisher` interface. When populated, this class will dictate publishing behavior, for the User/Profile/Org, unless otherwise specified by the `publish()` call. When blank, the framework will default to use the `LogDmlPublisher`, which inserts logs synchronously, using traditional DML. 
-- **Threshold**: The minimum `System.LoggingLevel` value that can be logged by the User/Profile/Org. If a `log()` statement's level is less severe than the threshold, the message will not be logged. Ex., when Threshold is `FINE`, then `FINER` and `FINEST` messages will not be logged, but all others will. This field expects a valid `System.LoggingLevel` value. If an invalid value is used, no logs will be captured for this User/Profile/Org.
+![The Log Setting Object](/media/logsetting.png)
+`LogSetting__c` is a custom settings object used to control log enablement, publishing behavior, and more. Specify a Log Setting record to determine how the Logger will run across your org, or for specific Users & Profiles.
 
 ### The `Logger.LogPublisher` Interface
 The Logger uses a `LogPublisher` interface to define the logic for publishing logs. `apex-logger` ships with a built in publisher - `LogDmlPublisher`. This class inserts logs using traditional DML.
