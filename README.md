@@ -77,11 +77,41 @@ TODO!
 TODO!
 
 ### The `LogSetting__c` Custom Settings Object
-TODO!
+`LogSetting__c` is a custom settings object used to control log enablement. Because this is a [Hierarchy Custom Settings](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_customsettings.htm) object, you have fine control over settings ranging from the whole organization, to profiles, to specific users. 
+
+At the beginning of each transaction, the framework will find the Log Setting record that matches their User. If one doesn't exist, it will find one based on their profile. If one doesn't exist, it will return the Organization-Wide Default Settings record. If that doesn't exist, the Logger will be disabled.
+
+![The Log Setting Object](media/logsetting.png)
+The `LogSetting__c` object contains these fields:
+- **Location**: TODO!
+- **Enabled**: TODO!
+- **Threshold**: TODO!
+- **Publisher**: TODO!
 
 ### The `Logger.LogPublisher` Interface
-TODO!
+The Logger uses a `LogPublisher` interface to define the logic for publishing logs. `apex-logger` ships with a built in publisher - `LogDmlPublisher`. This class inserts logs using traditional DML.
 
+You can also define your own publishing logic by creating a class which implements this interface:
+```
+global class MyPublisher implements Logger.LogPublisher {
+    global void publish(List<Log__c> logs) {
+        // Publishing logic goes here!
+    }
+}
+```
+
+You can specify which publisher to use via the `publish(Logger.LogPublisher)` method:
+```
+Logger.LogPublisher pub = new MyPublisher();
+new Logger().finest('Hello world!').publish(pub);
+```
+
+You can also specify a User's default Publisher class via the `LogSetting__c.Publisher__c` field:
+![Log Setting w/a Custom LogPublisher](media/logpublisher.png)
+```
+// Since a LogSetting__c.Publisher__c is defined, will use MyProcessor by default
+new Logger().finest('Hello world!').publish();
+```
 ## Getting Started
 
 `apex-logger` is available as an unlocked package. Before installing the logger package, you must install the [`lwc-related-list`](https://github.com/jasonsiders/lwc-related-list) package. Run this command:
