@@ -1,5 +1,5 @@
 // Create Log Settings for self & system users
-Set<Id> userIds = new Map<Id, User>([SELECT Id FROM User WHERE Alias IN ('autoproc', 'platint') LIMIT 1])?.keySet()?.clone();
+Set<Id> userIds = new Map<Id, User>([SELECT Id FROM User WHERE Alias IN ('autoproc', 'platint')])?.keySet()?.clone();
 userIds?.add(UserInfo.getUserId()); 
 userIds?.add(UserInfo.getOrganizationId());
 List<LogSetting__c> settings = new List<LogSetting__c>(); 
