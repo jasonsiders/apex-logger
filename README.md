@@ -74,7 +74,28 @@ TODO!
 TODO!
 
 ### The `Log__c` Object
-TODO!
+![A Log Record](/media/logrecord.png)
+
+Log details are stored in the `Log__c` custom object. The object contains these fields:
+- **Body**: TODO!
+- **Context**: TODO!
+- **Level**: TODO!
+- **Logged At**: The Date/Time that the `log()` method was called. This may differ slightly from the `CreatedDate`. 
+- **Logged By**: The User who called the `log()` method. This may differ from the `CreatedById`, depending on the publishing method used.
+- **Logged From**: TODO!
+- **Transaction**: TODO!
+- **Ordinal**: TODO!
+- **Related Record**: TODO!
+- **Source**: TODO!
+- **Stack Trace**: TODO!
+
+You can view Logs in the UI via the `Logs` tab:
+![Log List View](/media/loglistview.png) 
+
+You can also view logs related to a specific record via the `Related Logs` lightning component:
+![Log Related List in the Builder](/media/logrelatedlist-1.png) 
+
+![Log Related List on a Record Page](/media/logrelatedlist-2.png) 
 
 ### The `LogSetting__c` Custom Settings Object
 `LogSetting__c` is a custom settings object used to control log enablement. Because this is a [Hierarchy Custom Settings](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_customsettings.htm) object, you have fine control over settings ranging from the whole organization, to profiles, to specific users. 
@@ -114,6 +135,8 @@ new Logger().finest('Hello world!').publish();
 ```
 ## Getting Started
 
+### Installation
+
 `apex-logger` is available as an unlocked package. Before installing the logger package, you must install the [`lwc-related-list`](https://github.com/jasonsiders/lwc-related-list) package. Run this command:
 ```
 sfdx package install -p 04tDn0000011NQzIAM -w 5
@@ -123,3 +146,9 @@ Once installed, you are ready to install the logger package. Obtain the latest p
 ```
 sf package install -p 04t... -w 3
 ```
+
+### Configure
+TODO!
+
+### Assign Permissions
+TODO!
