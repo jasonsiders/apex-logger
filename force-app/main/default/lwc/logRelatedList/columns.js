@@ -10,7 +10,7 @@ const COLUMNS = [
 	{
 		label: "Log",
 		fieldName: URL_FIELD,
-        includeInRelatedList: true,
+		includeInRelatedList: true,
 		type: "url",
 		typeAttributes: {
 			label: { fieldName: LOG_NAME_FIELD?.fieldApiName }
@@ -19,29 +19,29 @@ const COLUMNS = [
 	{
 		label: "Body",
 		fieldName: BODY_FIELD?.fieldApiName,
-        includeInRelatedList: true
+		includeInRelatedList: true
 	},
 	{
 		label: "Level",
 		fieldName: LEVEL_FIELD?.fieldApiName,
-        includeInRelatedList: true
+		includeInRelatedList: true
 	},
-    {
-        label: "Context",
-        fieldName: CONTEXT_FIELD?.fieldApiName
-    },
-    {
-        label: "Created By",
-        fieldName: CREATED_BY_URL_FIELD,
-        type: "url",
-        typeAttributes: {
-            label: { fieldName: CREATED_BY_NAME_FIELD }
-        }
-    },
+	{
+		label: "Context",
+		fieldName: CONTEXT_FIELD?.fieldApiName
+	},
+	{
+		label: "Created By",
+		fieldName: CREATED_BY_URL_FIELD,
+		type: "url",
+		typeAttributes: {
+			label: { fieldName: CREATED_BY_NAME_FIELD }
+		}
+	},
 	{
 		label: "Created Date",
 		fieldName: CREATED_DATE_FIELD?.fieldApiName,
-        includeInRelatedList: true,
+		includeInRelatedList: true,
 		type: "date",
 		typeAttributes: {
 			day: "2-digit",
@@ -54,5 +54,5 @@ const COLUMNS = [
 ];
 
 export default function getColumns() {
-    return COLUMNS;
-} 
+	return COLUMNS;
+}

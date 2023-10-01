@@ -31,7 +31,7 @@ export default class LoggerCpe extends LightningElement {
 			const component = this.template.querySelector(componentName);
 			if (!component?.reportValidity()) {
 				const label = component?.label;
-				const error = { key: label, errorString: `${label} is invalid`};
+				const error = { key: label, errorString: `${label} is invalid` };
 				errors?.push(error);
 			}
 		});
@@ -61,7 +61,7 @@ export default class LoggerCpe extends LightningElement {
 	getInvocableVariable(name) {
 		// Retrieve the named Invocable Variable
 		return this.inputVariables?.find((variable) => variable?.name === name);
-	} 
+	}
 
 	handleChange(event) {
 		// Publish a ValueChangedEvent to send the input value to matching inputVariable
@@ -70,7 +70,7 @@ export default class LoggerCpe extends LightningElement {
 		const valueChangedEvent = new CustomEvent("configuration_editor_input_value_changed", {
 			bubbles: true,
 			cancelable: false,
-			composed: true, 
+			composed: true,
 			detail: {
 				name: elementName,
 				newValue,
