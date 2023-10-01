@@ -9,8 +9,8 @@ const VIEW_ALL_COMPONENT_NAME = "c:logRelatedPage";
 export default class LogRelatedList extends LightningElement {
 	@api recordId;
 	allColumns = getColumns();
-	cachedQueryResponse; 
-	isLoading = true; 
+	cachedQueryResponse;
+	isLoading = true;
 	logs = [];
 	logObject = LOG_OBJECT?.objectApiName;
 	refreshContainerId;
@@ -19,7 +19,7 @@ export default class LogRelatedList extends LightningElement {
 		// Display a subset of all columns for the related list page
 		// The related list page will contain the full list of columns
 		const subset = this.allColumns?.filter((column) => {
-			return column.includeInRelatedList === true; 
+			return column.includeInRelatedList === true;
 		});
 		return subset;
 	}
@@ -27,14 +27,14 @@ export default class LogRelatedList extends LightningElement {
 	get viewAllComponent() {
 		return {
 			componentDef: VIEW_ALL_COMPONENT_NAME,
-			attributes: { 
-				columns: this.allColumns, 
+			attributes: {
+				columns: this.allColumns,
 				objectApiName: this.logObject,
-				recordId: this.recordId 
+				recordId: this.recordId
 			},
-			tabInfo: { 
+			tabInfo: {
 				iconName: "standard:form",
-				title: "Logs" 
+				title: "Logs"
 			}
 		};
 	}
@@ -61,7 +61,7 @@ export default class LogRelatedList extends LightningElement {
 	}
 
 	handleRefresh() {
-		this.isLoading = true; 
+		this.isLoading = true;
 		refreshApex(this.cachedQueryResponse).then(() => {
 			this.isLoading = false;
 		});

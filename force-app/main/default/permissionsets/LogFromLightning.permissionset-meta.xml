@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <classAccesses>
+        <apexClass>LwcLogger</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <description>Gives users access to the LwcLogger class. Should be assigned to any users who may interact with Lightning Components that leverage the apex-logger framework.</description>
+    <hasActivationRequired>false</hasActivationRequired>
+    <label>Log From Lightning</label>
+</PermissionSet>
