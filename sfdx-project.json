@@ -10,8 +10,8 @@
 				}
 			],
 			"package": "apex-logger",
-			"versionName": "ver 0.2.0",
-			"versionNumber": "0.2.0.NEXT",
+			"versionName": "ver 1.0.0",
+			"versionNumber": "1.0.0.NEXT",
 			"versionDescription": ""
 		}
 	],
@@ -23,6 +23,7 @@
 		"lwc-related-list": "04tDn0000011NQzIAM",
 		"apex-logger": "0HoDn0000010wBfKAI",
 		"apex-logger@0.1.0-1": "04tDn0000011NR4IAM",
-		"apex-logger@0.2.0-1": "04tDn0000006weZIAQ"
+		"apex-logger@0.2.0-1": "04tDn0000006weZIAQ",
+		"apex-logger@1.0.0-1": "04tDn0000006wgaIAA"
 	}
 }
