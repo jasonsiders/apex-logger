@@ -40,7 +40,13 @@ export default class LogRelatedList extends LightningElement {
 	}
 
 	connectedCallback() {
-		this.refreshContainerId = registerRefreshContainer(this, this.handleRefresh);
+		try {
+			// Note: If LWS is not enabled, this will thrown an error. This can/should be enabled in Session Settings
+			// if using Lightning Locker, will not be able to handle incoming refreshes.
+			this.refreshContainerId = registerRefreshContainer(this, this.handleRefresh);
+		} catch (error) {
+			console.error(`c:asyncActionRelatedList: ${error}`);
+		}
 	}
 
 	@wire(getLogs, { recordId: "$recordId" })
