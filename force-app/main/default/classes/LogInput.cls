@@ -10,9 +10,9 @@ global class LogInput {
 		System.LoggingLevel level = this.getLevel();
 		Id recordId = this.getRecordId();
 		new Logger()
+			?.setCategory(this.category)
 			?.setLoggedFrom(this.loggedFrom)
 			?.setRelatedRecordId(recordId)
-			?.setCategory(this.category)
 			?.log(level, this.body);
 	}
 
