@@ -4,10 +4,10 @@ private class LwcLoggerTest {
 	static void shouldLogWithAdvancedDetails() {
 		LogInput input = new LogInput();
 		input.body = 'This is a test';
+		input.category = 'fooBarLwc';
 		input.level = System.LoggingLevel.ERROR?.name();
 		input.loggedFrom = 'c-my-lwc';
 		input.relatedRecordId = UserInfo.getUserId();
-		input.source = 'fooBarLwc';
 
 		Test.startTest();
 		LwcLogger.log(JSON.serialize(input));
@@ -17,10 +17,10 @@ private class LwcLoggerTest {
 		Assert.areEqual(1, logs?.size(), 'Wrong # of Logs created');
 		Log__c log = logs[0];
 		Assert.areEqual(input?.body, log?.Body__c, 'Wrong Level');
+		Assert.areEqual(input?.category, log?.Category__c, 'Wrong Category');
 		Assert.areEqual(input?.level, log?.Level__c, 'Wrong Level');
 		Assert.areEqual(input?.loggedFrom, log?.LoggedFrom__c, 'Wrong LoggedFrom');
 		Assert.areEqual(input?.relatedRecordId, log?.RelatedRecordId__c, 'Wrong RelatedRecordId');
-		Assert.areEqual(input?.source, log?.Source__c, 'Wrong Source');
 	}
 
 	@IsTest
@@ -37,10 +37,10 @@ private class LwcLoggerTest {
 		Assert.areEqual(1, logs?.size(), 'Wrong # of Logs created');
 		Log__c log = logs[0];
 		Assert.areEqual(input?.body, log?.Body__c, 'Wrong Level');
+		Assert.isNull(log?.Category__c, 'Category was set, but how?');
 		Assert.areEqual(input?.level, log?.Level__c, 'Wrong Level');
 		Assert.isNull(log?.LoggedFrom__c, 'LoggedFrom was set, but how?');
 		Assert.isNull(log?.RelatedRecordId__c, 'RelatedRecordId was set, but how?');
-		Assert.isNull(log?.Source__c, 'Source was set, but how?');
 	}
 
 	@IsTest
@@ -66,6 +66,6 @@ private class LwcLoggerTest {
 	}
 
 	static List<Log__c> getLogs() {
-		return [SELECT Id, LoggedFrom__c, Body__c, Level__c, RelatedRecordId__c, Source__c FROM Log__c];
+		return [SELECT Id, LoggedFrom__c, Body__c, Category__c, Level__c, RelatedRecordId__c FROM Log__c];
 	}
 }

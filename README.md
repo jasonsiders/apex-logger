@@ -40,15 +40,15 @@ new Logger().finest('Hello world!');
 
 The `Logger` class also provides methods used to add additional context to Logs:
 
+-   `setCategory__c(String)`: Sets the `Category__c` field. This can be used to categorize your Log messages in a way that's meaningful to your organization. For example, this could be the name of a managed package, or the business division that the code is running in.
 -   `setLoggedFrom(Type/String)`: Sets the `LoggedFrom__c` field. In Apex, this should be the current Apex Class.
 -   `setRelatedRecordId(SObject/Id)`: Sets the `RelatedRecordId__c` field, which allows the Log to be displayed on that record page if desired.
--   `setSource(String)`: Sets the `Source__c` field. This can be used to specify what generated the Log message in a way that's meaningful to your organization. For example, this could be the name of a managed package, or the business division that the code is running in.
 
 ```java
 Logger myLogger = new Logger()
+	.setCategory('apex-logger')
     .setLoggedFrom(MyClass.class)
-    .setRelatedRecordId(account.Id)
-    .setSource('apex-logger');
+    .setRelatedRecordId(account.Id);
 // All of these logs will use the context generated above
 for (Integer i = 0; i < 200; i++) {
     myLogger.finest('Log #' + i);
@@ -109,9 +109,9 @@ let logInput = {
 	body: "Hello world!",
 	level: "FINEST",
 	// The rest are all optional
+	category: "my-package",
 	loggedFrom: "my-lwc",
-	relatedRecordId: this.recordId,
-	source: "my-package"
+	relatedRecordId: this.recordId
 };
 doLog({ payload: JSON.stringify(logInput) });
 ```

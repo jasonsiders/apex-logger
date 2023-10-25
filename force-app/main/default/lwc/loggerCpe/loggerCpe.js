@@ -6,7 +6,7 @@ const INVOCABLE_VARS = {
 	LEVEL: "level",
 	LOGGED_FROM: "loggedFrom",
 	RELATED_RECORD: "relatedRecordId",
-	SOURCE: "source"
+	CATEGORY: "category"
 };
 // Maps to valid System.LoggingLevel enum options
 const LEVEL_OPTIONS = [
@@ -54,8 +54,8 @@ export default class LoggerCpe extends LightningElement {
 		return this.getInvocableVariable(this.invocableVars?.RELATED_RECORD)?.value;
 	}
 
-	get source() {
-		return this.getInvocableVariable(this.invocableVars?.SOURCE)?.value;
+	get category() {
+		return this.getInvocableVariable(this.invocableVars?.CATEGORY)?.value;
 	}
 
 	getInvocableVariable(name) {
