@@ -2,7 +2,7 @@ global without sharing virtual class Logger {
 	// Constants
 	static final LogPublisher DEFAULT_PUBLISHER = Logger.getDefaultPublisher();
 	static final Integer LONG_TEXT_LENGTH = Log__c.Body__c?.getDescribe()?.getLength();
-	static final Integer SHORT_TEXT_LENGTH = Log__c.Source__c?.getDescribe()?.getLength();
+	static final Integer SHORT_TEXT_LENGTH = Log__c.Category__c?.getDescribe()?.getLength();
 	static final System.Quiddity QUIDDITY = System.Request.getCurrent()?.getQuiddity();
 	static final System.LoggingLevel THRESHOLD = Logger.getThreshold();
 	static final String TRANSACTION_ID = System.Request.getCurrent()?.getRequestId();
@@ -11,14 +11,15 @@ global without sharing virtual class Logger {
 	static List<Log__c> pendingLogs = new List<Log__c>();
 	static Integer ordinal = 1;
 	// Non-static members
+	String category;
 	String loggedFrom;
 	Id relatedRecordId;
-	String source;
 
 	// **** VIRTUAL **** //
 	global virtual Log__c generateLog(System.LoggingLevel level, Object body) {
 		return new Log__c(
 			Body__c = String.valueOf(body)?.abbreviate(LONG_TEXT_LENGTH),
+			Category__c = this.category?.abbreviate(SHORT_TEXT_LENGTH),
 			Context__c = QUIDDITY?.name(),
 			Level__c = level?.name(),
 			LoggedAt__c = DateTime.now(),
@@ -26,7 +27,6 @@ global without sharing virtual class Logger {
 			LoggedFrom__c = this.loggedFrom,
 			Ordinal__c = ordinal++,
 			RelatedRecordId__c = this.relatedRecordId,
-			Source__c = this.source?.abbreviate(SHORT_TEXT_LENGTH),
 			StackTrace__c = new LogException()?.getStackForLog()?.abbreviate(LONG_TEXT_LENGTH),
 			Transaction__c = TRANSACTION_ID
 		);
@@ -87,6 +87,11 @@ global without sharing virtual class Logger {
 		return this.publish(DEFAULT_PUBLISHER);
 	}
 
+	global Logger setCategory(String category) {
+		this.category = category;
+		return this;
+	}
+
 	global Logger setLoggedFrom(String componentName) {
 		this.loggedFrom = componentName;
 		return this;
@@ -106,8 +111,10 @@ global without sharing virtual class Logger {
 	}
 
 	global Logger setSource(String source) {
-		this.source = source;
-		return this;
+		// This method used to update the Source__c field
+		// Since v1.0.1, this was been replaced with the Category__c field
+		// Keep the method around for backwards compatibility, but point at the new field.
+		return this.setCategory(source);
 	}
 
 	// **** PRIVATE **** //

@@ -15,13 +15,13 @@ private class LoggerTest {
 		Log__c log = Logger.pendingLogs[0];
 		Assert.isNull(log?.LoggedFrom__c, 'Has Logged From, but one wasn\'t set');
 		Assert.areEqual(logMsg, log?.Body__c, 'Wrong Log');
+		Assert.isNull(log?.Category__c, 'Has Category, but one wasn\'t set');
 		Assert.isNotNull(log?.Context__c, 'Missing Context');
 		Assert.areEqual(level?.name(), log?.Level__c, 'Wrong Level');
 		Assert.isNotNull(log?.LoggedAt__c, 'Missing Logged At');
 		Assert.areEqual(UserInfo.getUserId(), log?.LoggedBy__c, 'Wrong Logged By');
 		Assert.areEqual(1, log?.Ordinal__c, 'Wrong Ordinal');
 		Assert.isNull(log?.RelatedRecordId__c, 'Has Related Record Id, but one wasn\'t set');
-		Assert.isNull(log?.Source__c, 'Has Source, but one wasn\'t set');
 		Assert.isNotNull(log?.StackTrace__c, 'Missing Stack Trace');
 		Assert.isNotNull(log?.Transaction__c, 'Missing Transaction');
 		// Only this test - assert that logs weren't actually inserted up to this point
@@ -149,9 +149,12 @@ private class LoggerTest {
 		LogSetting__c settings = LogTestUtils.enableLogging(level);
 		Type apexClass = LoggerTest.class;
 		User me = new User(Id = UserInfo.getUserId());
-		String source = 'foo';
+		String category = 'foo';
 		String logMsg = 'This is a test';
-		Logger myLogger = new Logger()?.setLoggedFrom(apexClass)?.setRelatedRecordId(me)?.setSource(source);
+		Logger myLogger = new Logger()
+			?.setCategory(category)
+			?.setLoggedFrom(apexClass)
+			?.setRelatedRecordId(me);			
 
 		Test.startTest();
 		myLogger?.log(level, logMsg);
@@ -162,15 +165,36 @@ private class LoggerTest {
 		Log__c log = Logger.pendingLogs[0];
 		Assert.areEqual(apexClass?.getName(), log?.LoggedFrom__c, 'Wrong Logged From');
 		Assert.areEqual(logMsg, log?.Body__c, 'Wrong Log');
+		Assert.areEqual(category, log?.Category__c, 'Wrong Category');
 		Assert.isNotNull(log?.Context__c, 'Missing Context');
 		Assert.areEqual(level?.name(), log?.Level__c, 'Wrong Level');
 		Assert.isNotNull(log?.LoggedAt__c, 'Missing Logged At');
 		Assert.areEqual(UserInfo.getUserId(), log?.LoggedBy__c, 'Wrong Logged By');
 		Assert.areEqual(1, log?.Ordinal__c, 'Wrong Ordinal');
 		Assert.areEqual(me?.Id, log?.RelatedRecordId__c, 'Wrong Related Record Id');
-		Assert.areEqual(source, log?.Source__c, 'Wrong Source');
 		Assert.isNotNull(log?.StackTrace__c, 'Missing Stack Trace');
 		Assert.isNotNull(log?.Transaction__c, 'Missing Transaction');
+	}
+
+	@IsTest 
+	static void shouldLogWithDeprecatedSourceMethod() {
+		// The setSource() field used to update the Source__c field
+		// Since v1.0.1, this was been replaced with the Category__c field
+		// Keep the method around for backwards compatibility, but point at the new field.
+		System.LoggingLevel level = System.LoggingLevel.INFO;
+		LogSetting__c settings = LogTestUtils.enableLogging(level);
+		String logMsg = 'This is a test';
+		String source = 'foo';
+		Logger myLogger = new Logger()?.setSource(source);			
+
+		Test.startTest();
+		myLogger?.log(level, logMsg);
+		Test.stopTest();
+
+		Assert.areEqual(1, Logger.pendingLogs?.size(), 'Wrong # of Logs');
+		// Only this test - assert that fields are mapped correctly
+		Log__c log = Logger.pendingLogs[0];
+		Assert.areEqual(source, log?.Category__c, 'Wrong Category');
 	}
 
 	@IsTest
@@ -279,13 +303,13 @@ private class LoggerTest {
 
 		Test.startTest();
 		try {
-			new Logger()?.setSource('S'?.repeat(badLen))?.finest('B'?.repeat(badLen))?.publish();
+			new Logger()?.setCategory('S'?.repeat(badLen))?.finest('B'?.repeat(badLen))?.publish();
 		} catch (Exception error) {
 			Assert.fail('Failed to log: ' + error);
 		}
 		Test.stopTest();
 
-		List<Log__c> logs = [SELECT Id, Body__c, Source__c FROM Log__c];
+		List<Log__c> logs = [SELECT Id, Body__c, Category__c FROM Log__c];
 		Assert.areEqual(1, logs?.size(), 'Wrong # of Logs');
 		Log__c log = logs[0];
 		Assert.areEqual(
@@ -294,9 +318,9 @@ private class LoggerTest {
 			'Did not abbreviate Body to max length'
 		);
 		Assert.areEqual(
-			Log__c.Source__c?.getDescribe()?.getLength(),
-			log?.Source__c?.length(),
-			'Did not abbreviate Source to max length'
+			Log__c.Category__c?.getDescribe()?.getLength(),
+			log?.Category__c?.length(),
+			'Did not abbreviate Category to max length'
 		);
 	}
 
