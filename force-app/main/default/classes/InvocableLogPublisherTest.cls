@@ -34,7 +34,11 @@ private class InvocableLogPublisherTest {
 	@IsTest 
 	static void shouldUseDefaultPublisherIfInvalidProvider() {
 		// If the publisher value doesn't match an existing Logger.LogPublisher, 
-		// use the default publisher defined by the user's LogSetting__c,
+		// use the default publisher defined by the user's LogSetting__c.
+		// Also: post a warning log, that the defined publisher does not exist
+		LogSetting__c settings = LogSetting__c.getInstance();
+		settings.Threshold__c = System.LoggingLevel.WARN.name();
+		update settings;
 		new Logger().error('This is a test');
 		InvocableLogPublisher.Input input = new InvocableLogPublisher.Input();
 		input.publisherName = 'abcd1234';
@@ -43,8 +47,22 @@ private class InvocableLogPublisherTest {
 		InvocableLogPublisher.invoke(new List<InvocableLogPublisher.Input>{input});
 		Test.stopTest();
 
-		List<Log__c> logs = [SELECT Id FROM Log__c];
-		Assert.areEqual(1, logs?.size(), 'Wrong # of logs');
+		Map<String, List<Log__c>> logsByLevel = new Map<String, List<Log__c>>(); 
+		for (Log__c log : [SELECT Id, Level__c FROM Log__c]) {
+			String level = log?.Level__c;
+			List<Log__c> matching = logsByLevel?.containsKey(level)
+				? logsByLevel?.get(level)
+				: new List<Log__c>();
+			matching?.add(log);
+			logsByLevel?.put(level, matching);
+		}
+		Assert.areEqual(2, logsByLevel?.size(), 'Wrong # of logs');
+		for (System.LoggingLevel level : new List<System.LoggingLevel>{
+			System.LoggingLevel.ERROR, 
+			System.LoggingLevel.WARN
+		}) {
+			Assert.areEqual(1, logsByLevel?.get(level?.name())?.size(), 'Wrong # of ' + level + ' logs');
+		}
 	}
 
 	@IsTest 
@@ -98,6 +116,6 @@ private class InvocableLogPublisherTest {
 	// **** HELPER **** //
 	@TestSetup
 	static void setup() {
-		LogTestUtils.enableLogging(System.LoggingLevel.FINEST);
+		LogTestUtils.enableLogging(System.LoggingLevel.ERROR);
 	}
 }
