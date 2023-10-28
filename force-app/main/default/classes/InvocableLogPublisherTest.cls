@@ -4,7 +4,7 @@ private class InvocableLogPublisherTest {
 	static void shouldPublishWithSpecificPublisher() {
 		new Logger().error('This is a test');
 		InvocableLogPublisher.Input input = new InvocableLogPublisher.Input();
-		input.publisherName = LogEventPublisher.class.getName();
+		input.publisher = LogEventPublisher.class.getName();
 
 		Test.startTest();
 		InvocableLogPublisher.invoke(new List<InvocableLogPublisher.Input>{input});
@@ -21,7 +21,7 @@ private class InvocableLogPublisherTest {
 		// If the publisher value is missing, use the default publisher defined by the user's LogSetting__c,
 		new Logger().error('This is a test');
 		InvocableLogPublisher.Input input = new InvocableLogPublisher.Input();
-		input.publisherName = null;
+		input.publisher = null;
 
 		Test.startTest();
 		InvocableLogPublisher.invoke(new List<InvocableLogPublisher.Input>{input});
@@ -41,7 +41,7 @@ private class InvocableLogPublisherTest {
 		update settings;
 		new Logger().error('This is a test');
 		InvocableLogPublisher.Input input = new InvocableLogPublisher.Input();
-		input.publisherName = 'abcd1234';
+		input.publisher = 'abcd1234';
 
 		Test.startTest();
 		InvocableLogPublisher.invoke(new List<InvocableLogPublisher.Input>{input});
@@ -76,7 +76,7 @@ private class InvocableLogPublisherTest {
 			LogDmlPublisher.class.getName() 
 		}) {
 			InvocableLogPublisher.Input input = new InvocableLogPublisher.Input(); 
-			input.publisherName = publisher;
+			input.publisher = publisher;
 			inputs?.add(input);
 		}
 		
@@ -100,7 +100,7 @@ private class InvocableLogPublisherTest {
 			LogEventPublisher.class.getName()
 		}) {
 			InvocableLogPublisher.Input input = new InvocableLogPublisher.Input(); 
-			input.publisherName = publisher;
+			input.publisher = publisher;
 			inputs?.add(input);
 		}
 		
@@ -122,7 +122,7 @@ private class InvocableLogPublisherTest {
 			LogEventPublisher.class.getName()
 		}) {
 			InvocableLogPublisher.Input input = new InvocableLogPublisher.Input(); 
-			input.publisherName = publisher;
+			input.publisher = publisher;
 			inputs?.add(input);
 		}
 		
