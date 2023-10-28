@@ -11,7 +11,7 @@ global abstract class InvocableLogPublisher {
 				new Logger().publish(publisher);
 				break; 
 			} else {
-				META_LOGGER?.warn(input?.publisherName + ' is not a valid instance of Logger.LogPublisher');
+				META_LOGGER?.warn(input?.publisher + ' is not a valid instance of Logger.LogPublisher');
 			}
 		}
 		// If the logs are still unpublished, use the default publisher
@@ -19,12 +19,12 @@ global abstract class InvocableLogPublisher {
 	}
 
 	global class Input {
-		@InvocableVariable 
-		global String publisherName;
+		@InvocableVariable(label='Publisher Class' required=true)
+		global String publisher;
 
 		private Logger.LogPublisher getPublisher() {
-			return String.isNotBlank(this.publisherName)
-				? (Logger.LogPublisher) Type.forName(this.publisherName)?.newInstance()
+			return String.isNotBlank(this.publisher)
+				? (Logger.LogPublisher) Type.forName(this.publisher)?.newInstance()
 				: Logger.DEFAULT_PUBLISHER;
 		}
 	}
