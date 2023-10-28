@@ -113,6 +113,28 @@ private class InvocableLogPublisherTest {
 		Assert.areEqual(1, LogEventPublisher.numPublished, 'Wrong # of Logs Published via LogEventPublisher');
 	}
 
+	@IsTest 
+	static void shouldTreatNullAsDefaultProvider() {
+		new Logger().error('This is a test');
+		List<InvocableLogPublisher.Input> inputs = new List<InvocableLogPublisher.Input>();
+		for (String publisher : new List<String>{ 
+			null,
+			LogEventPublisher.class.getName()
+		}) {
+			InvocableLogPublisher.Input input = new InvocableLogPublisher.Input(); 
+			input.publisherName = publisher;
+			inputs?.add(input);
+		}
+		
+		Test.startTest();
+		InvocableLogPublisher.invoke(inputs);
+		Assert.areEqual(0, Limits.getPublishImmediateDml(), 'Wrong # of Platform Event Publishes');
+		Assert.areEqual(1, Limits.getDmlStatements(), 'Wrong # of DML statements');
+		Test.stopTest();
+
+		Assert.areEqual(0, LogEventPublisher.numPublished, 'Wrong # of Logs Published via LogEventPublisher');
+	}
+
 	// **** HELPER **** //
 	@TestSetup
 	static void setup() {

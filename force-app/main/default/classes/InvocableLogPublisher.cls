@@ -3,26 +3,29 @@ global abstract class InvocableLogPublisher {
 
 	@InvocableMethod(category='Logging' label='Publish Logs')
 	global static void invoke(List<Input> inputs) {
-		Logger.LogPublisher publisher; 
+		// Iterate through the inputs and retrieve the first valid LogPublisher
+		// Then use this publisher to publish any pending logs
 		for (Input input : inputs) {
-			try {
-				publisher = (Logger.LogPublisher) Type.forName(input?.publisherName)?.newInstance();
-				if (publisher != null) {
-					break;
-				} else {
-					throw new System.NoSuchElementException();
-				}
-			} catch (Exception error) {
+			Logger.LogPublisher publisher = input?.getPublisher();
+			if (publisher != null) {
+				new Logger().publish(publisher);
+				break; 
+			} else {
 				META_LOGGER?.warn(input?.publisherName + ' is not a valid instance of Logger.LogPublisher');
 			}
 		}
-		Logger logger = (publisher != null) 
-			? new Logger()?.publish(publisher) 
-			: new Logger().publish();
+		// If the logs are still unpublished, use the default publisher
+		new Logger().publish();
 	}
 
 	global class Input {
 		@InvocableVariable 
 		global String publisherName;
+
+		private Logger.LogPublisher getPublisher() {
+			return String.isNotBlank(this.publisherName)
+				? (Logger.LogPublisher) Type.forName(this.publisherName)?.newInstance()
+				: Logger.DEFAULT_PUBLISHER;
+		}
 	}
 }

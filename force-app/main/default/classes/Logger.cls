@@ -1,6 +1,6 @@
 global without sharing virtual class Logger {
 	// Constants
-	static final LogPublisher DEFAULT_PUBLISHER = Logger.getDefaultPublisher();
+	public static final LogPublisher DEFAULT_PUBLISHER = Logger.getDefaultPublisher();
 	static final Integer LONG_TEXT_LENGTH = Log__c.Body__c?.getDescribe()?.getLength();
 	static final Integer SHORT_TEXT_LENGTH = Log__c.Category__c?.getDescribe()?.getLength();
 	static final System.Quiddity QUIDDITY = System.Request.getCurrent()?.getQuiddity();
