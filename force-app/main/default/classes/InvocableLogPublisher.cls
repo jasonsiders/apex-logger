@@ -19,7 +19,7 @@ global abstract class InvocableLogPublisher {
 	}
 
 	global class Input {
-		@InvocableVariable(label='Publisher Class' required=true)
+		@InvocableVariable(label='Publisher Class' required=false)
 		global String publisher;
 
 		private Logger.LogPublisher getPublisher() {
