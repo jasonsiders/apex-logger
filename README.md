@@ -140,7 +140,9 @@ You can also view logs related to a specific record via the `Related Logs` light
 
 ### The `Logger.LogPublisher` Interface
 
-The Logger uses a `LogPublisher` interface to define the logic for publishing logs. `apex-logger` ships with a built in publisher - `LogDmlPublisher`. This class inserts logs using traditional DML.
+The Logger uses a `LogPublisher` interface to define the logic for publishing logs. `apex-logger` ships with two built in publishers:
+- `LogDmlPublisher`: Inserts logs using traditional DML.
+- `LogEventPublisher`: Inserts logs immediately, using platform events. Use this publisher in instances where Logs should be published even when the transaction fails (ie., due to an uncaught exception). 
 
 You can also define your own publishing logic by creating a class which implements this interface and its `publish()` method:
 
