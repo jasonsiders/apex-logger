@@ -1,18 +1,18 @@
 global class LogInput {
 	@InvocableVariable
 	global String body,
+		category,
 		level,
 		loggedFrom,
-		relatedRecordId,
-		source;
+		relatedRecordId;
 
 	global void log() {
 		System.LoggingLevel level = this.getLevel();
 		Id recordId = this.getRecordId();
 		new Logger()
+			?.setCategory(this.category)
 			?.setLoggedFrom(this.loggedFrom)
 			?.setRelatedRecordId(recordId)
-			?.setSource(this.source)
 			?.log(level, this.body);
 	}
 

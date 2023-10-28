@@ -55,7 +55,7 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
-        <field>Log__c.Source__c</field>
+        <field>Log__c.Category__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>

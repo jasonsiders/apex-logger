@@ -4,10 +4,10 @@ private class InvocableLoggerTest {
 	static void shouldLogWithAdvancedDetails() {
 		LogInput input = new LogInput();
 		input.body = 'This is a test';
+		input.category = 'fooBarFlow';
 		input.level = System.LoggingLevel.ERROR.name();
 		input.loggedFrom = 'My_Flow';
 		input.relatedRecordId = UserInfo.getUserId();
-		input.source = 'fooBarFlow';
 
 		Test.startTest();
 		InvocableLogger.invoke(new List<LogInput>{ input });
@@ -17,10 +17,10 @@ private class InvocableLoggerTest {
 		Assert.areEqual(1, logs?.size(), 'Wrong # of Logs created');
 		Log__c log = logs[0];
 		Assert.areEqual(input?.body, log?.Body__c, 'Wrong Level');
+		Assert.areEqual(input?.category, log?.Category__c, 'Wrong Category');
 		Assert.areEqual(input?.level, log?.Level__c, 'Wrong Level');
 		Assert.areEqual(input?.loggedFrom, log?.LoggedFrom__c, 'Wrong LoggedFrom');
 		Assert.areEqual(input?.relatedRecordId, log?.RelatedRecordId__c, 'Wrong RelatedRecordId');
-		Assert.areEqual(input?.source, log?.Source__c, 'Wrong Source');
 	}
 
 	@IsTest
@@ -37,10 +37,10 @@ private class InvocableLoggerTest {
 		Assert.areEqual(1, logs?.size(), 'Wrong # of Logs created');
 		Log__c log = logs[0];
 		Assert.areEqual(input?.body, log?.Body__c, 'Wrong Level');
+		Assert.isNull(log?.Category__c, 'Category was set, but how?');
 		Assert.areEqual(input?.level, log?.Level__c, 'Wrong Level');
 		Assert.isNull(log?.LoggedFrom__c, 'LoggedFrom was set, but how?');
 		Assert.isNull(log?.RelatedRecordId__c, 'RelatedRecordId was set, but how?');
-		Assert.isNull(log?.Source__c, 'Source was set, but how?');
 	}
 
 	// **** HELPER **** //

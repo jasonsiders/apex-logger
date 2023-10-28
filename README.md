@@ -40,15 +40,15 @@ new Logger().finest('Hello world!');
 
 The `Logger` class also provides methods used to add additional context to Logs:
 
+-   `setCategory__c(String)`: Sets the `Category__c` field. This can be used to categorize your Log messages in a way that's meaningful to your organization. For example, this could be the name of a managed package, or the business division that the code is running in.
 -   `setLoggedFrom(Type/String)`: Sets the `LoggedFrom__c` field. In Apex, this should be the current Apex Class.
 -   `setRelatedRecordId(SObject/Id)`: Sets the `RelatedRecordId__c` field, which allows the Log to be displayed on that record page if desired.
--   `setSource(String)`: Sets the `Source__c` field. This can be used to specify what generated the Log message in a way that's meaningful to your organization. For example, this could be the name of a managed package, or the business division that the code is running in.
 
 ```java
 Logger myLogger = new Logger()
+	.setCategory('apex-logger')
     .setLoggedFrom(MyClass.class)
-    .setRelatedRecordId(account.Id)
-    .setSource('apex-logger');
+    .setRelatedRecordId(account.Id);
 // All of these logs will use the context generated above
 for (Integer i = 0; i < 200; i++) {
     myLogger.finest('Log #' + i);
@@ -80,19 +80,23 @@ new Logger().publish(publisher);
 
 ### Logging From Flows
 
-To log from flow, use the included `Log` and `Publish Logs` invocable actions.
+To log from flow, use the included `Log` and `Publish Logs` invocable actions. Both actions allow the use of flow variable notation to insert variables from your flow in the log body or other fields. For example, `{!myVar}`.
+
+> **IMPORTANT**: Screen Flows give users the option to select whether to execute the transaction in the current, or new transaction. Because the Logger framework is only aware of Logs made in the current transaction, it's important that you select the **Always continue in current transaction** option, when provided the choice.
+
+![Always execute Logger invocables in the current transaction](media/transaction-control.png)
 
 #### The `Log` Invocable Action (`InvocableLogger`)
 
 ![The "Log" Invocable Action](/media/loginvocable.png)
 Generates a Log message, and stores it in memory. To insert the log, call the `Publish Logs` invocable action afterwards.
 
-> Note: You can use flow variable notation (`{!myVar}`) to insert variables from your flow in the log body or other fields.
-
 #### The `Publish Logs` Invocable Action (`InvocableLogPublisher`)
 
 ![The "Publish Logs" Invocable Action](media/publishlogsinvocable.png)
-Publishes any pending Logs, via a `publish()` call. It's not possible to specify the `LogPublisher` from this invocable action.
+Publishes any pending Logs, via a `publish()` call. 
+
+You may optionally specify the name of a `Logger.LogPublisher` class to handle custom publishing behavior. If no value is specified, the default publisher will be used instead. 
 
 ### Logging From Lightning Components
 
@@ -109,9 +113,9 @@ let logInput = {
 	body: "Hello world!",
 	level: "FINEST",
 	// The rest are all optional
+	category: "my-package",
 	loggedFrom: "my-lwc",
-	relatedRecordId: this.recordId,
-	source: "my-package"
+	relatedRecordId: this.recordId
 };
 doLog({ payload: JSON.stringify(logInput) });
 ```
@@ -136,7 +140,9 @@ You can also view logs related to a specific record via the `Related Logs` light
 
 ### The `Logger.LogPublisher` Interface
 
-The Logger uses a `LogPublisher` interface to define the logic for publishing logs. `apex-logger` ships with a built in publisher - `LogDmlPublisher`. This class inserts logs using traditional DML.
+The Logger uses a `LogPublisher` interface to define the logic for publishing logs. `apex-logger` ships with two built in publishers:
+- `LogDmlPublisher`: Inserts logs using traditional DML.
+- `LogEventPublisher`: Inserts logs immediately, using platform events. Use this publisher in instances where Logs should be published even when the transaction fails (ie., due to an uncaught exception). 
 
 You can also define your own publishing logic by creating a class which implements this interface and its `publish()` method:
 

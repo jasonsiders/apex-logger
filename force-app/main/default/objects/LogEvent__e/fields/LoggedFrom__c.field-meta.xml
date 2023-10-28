@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
-    <fullName>Source__c</fullName>
-    <description>Contains optional information about where the log originated. Ex., a specific managed package, or a specific business process.</description>
+    <fullName>LoggedFrom__c</fullName>
+    <description>The component (ex., Logged From) which spawned the current log record. Maps to the Log field of the same name.</description>
     <externalId>false</externalId>
-    <label>Source</label>
+    <label>Logged From</label>
     <length>255</length>
     <required>false</required>
     <trackTrending>false</trackTrending>
