@@ -80,19 +80,23 @@ new Logger().publish(publisher);
 
 ### Logging From Flows
 
-To log from flow, use the included `Log` and `Publish Logs` invocable actions.
+To log from flow, use the included `Log` and `Publish Logs` invocable actions. Both actions allow the use of flow variable notation to insert variables from your flow in the log body or other fields. For example, `{!myVar}`.
+
+> **IMPORTANT**: Screen Flows give users the option to select whether to execute the transaction in the current, or new transaction. Because the Logger framework is only aware of Logs made in the current transaction, it's important that you select the **Always continue in current transaction** option, when provided the choice.
+
+![Always execute Logger invocables in the current transaction](media/transaction-control.png)
 
 #### The `Log` Invocable Action (`InvocableLogger`)
 
 ![The "Log" Invocable Action](/media/loginvocable.png)
 Generates a Log message, and stores it in memory. To insert the log, call the `Publish Logs` invocable action afterwards.
 
-> Note: You can use flow variable notation (`{!myVar}`) to insert variables from your flow in the log body or other fields.
-
 #### The `Publish Logs` Invocable Action (`InvocableLogPublisher`)
 
 ![The "Publish Logs" Invocable Action](media/publishlogsinvocable.png)
-Publishes any pending Logs, via a `publish()` call. It's not possible to specify the `LogPublisher` from this invocable action.
+Publishes any pending Logs, via a `publish()` call. 
+
+You may optionally specify the name of a `Logger.LogPublisher` class to handle custom publishing behavior. If no value is specified, the default publisher will be used instead. 
 
 ### Logging From Lightning Components
 
