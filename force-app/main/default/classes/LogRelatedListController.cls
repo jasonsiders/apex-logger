@@ -25,4 +25,9 @@ public abstract class LogRelatedListController {
 			throw new AuraHandledException(error?.getMessage());
 		}
 	}
+
+	@AuraEnabled(cacheable=true)
+	public static Boolean hasAccess() {
+		return SObjectType.Log__c?.isAccessible() == true;
+	}
 }
