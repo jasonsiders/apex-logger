@@ -40,6 +40,7 @@ export default class LogRelatedPage extends NavigationMixin(LightningElement) {
 		// All columns on the full-page version of this component should be sortable
 		let columns = JSON.parse(JSON.stringify(values));
 		columns?.forEach((column) => {
+			column.hideDefaultActions = false;
 			column.sortable = true;
 			if (column?.isDefaultSort) {
 				this.sortByField = column?.fieldName;

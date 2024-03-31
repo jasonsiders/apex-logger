@@ -11,38 +11,43 @@ import CONTEXT_FIELD from "@salesforce/schema/Log__c.Context__c";
 import ID_FIELD from "@salesforce/schema/Log__c.Id";
 import LEVEL_FIELD from "@salesforce/schema/Log__c.Level__c";
 import LOGGED_AT_FIELD from "@salesforce/schema/Log__c.LoggedAt__c";
-import LOG_NUMBER_FIELD from "@salesforce/schema/Log__c.Name";
+import LOG_NAME_FIELD from "@salesforce/schema/Log__c.Name";
 import LOG_OBJECT from "@salesforce/schema/Log__c";
 const URL_FIELD = "LogUrl";
 const LOGGED_BY_NAME_FIELD = "LoggedByName";
 const LOGGED_BY_URL_FIELD = "LoggedByUrl";
 const COLUMNS = [
 	{
-		label: "Log Number",
+		label: "Log Name",
 		fieldName: URL_FIELD,
+		hideDefaultActions: true,
 		includeInRelatedList: true,
 		type: "url",
 		typeAttributes: {
-			label: { fieldName: LOG_NUMBER_FIELD?.fieldApiName }
+			label: { fieldName: LOG_NAME_FIELD?.fieldApiName }
 		}
 	},
 	{
 		label: "Body",
 		fieldName: BODY_FIELD?.fieldApiName,
+		hideDefaultActions: true,
 		includeInRelatedList: true
 	},
 	{
 		label: "Level",
 		fieldName: LEVEL_FIELD?.fieldApiName,
+		hideDefaultActions: true,
 		includeInRelatedList: true
 	},
 	{
 		label: "Context",
-		fieldName: CONTEXT_FIELD?.fieldApiName
+		fieldName: CONTEXT_FIELD?.fieldApiName,
+		hideDefaultActions: true
 	},
 	{
 		label: "Logged By",
 		fieldName: LOGGED_BY_URL_FIELD,
+		hideDefaultActions: true,
 		type: "url",
 		typeAttributes: {
 			label: { fieldName: LOGGED_BY_NAME_FIELD }
@@ -51,6 +56,7 @@ const COLUMNS = [
 	{
 		label: "Logged At",
 		fieldName: LOGGED_AT_FIELD?.fieldApiName,
+		hideDefaultActions: true,
 		includeInRelatedList: true,
 		type: "date",
 		typeAttributes: {
