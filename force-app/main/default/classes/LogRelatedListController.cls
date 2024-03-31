@@ -10,10 +10,10 @@ public abstract class LogRelatedListController {
 					Id,
 					Body__c,
 					Context__c,
-					CreatedById,
-					CreatedBy.Name,
-					CreatedDate,
 					Level__c,
+					LoggedAt__c,
+					LoggedBy__c,
+					LoggedBy__r.Name,
 					Name,
 					RelatedRecordId__c
 				FROM Log__c

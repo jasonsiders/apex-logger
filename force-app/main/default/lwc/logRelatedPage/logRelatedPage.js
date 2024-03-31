@@ -221,10 +221,10 @@ export default class LogRelatedPage extends NavigationMixin(LightningElement) {
 	async mapLogs(logs) {
 		// Add hyperlink "fields" to the objects returned from the database
 		this.allLogs = logs?.map((log) => {
-			const CreatedByName = log?.CreatedBy?.Name;
-			const CreatedByUrl = `/${log?.CreatedById}`;
+			const LoggedByName = log?.LoggedBy__r?.Name;
+			const LoggedByUrl = `/${log?.LoggedBy__c}`;
 			const LogUrl = `/${log?.Id}`;
-			return { ...log, CreatedByName, CreatedByUrl, LogUrl };
+			return { ...log, LoggedByName, LoggedByUrl, LogUrl };
 		});
 	}
 

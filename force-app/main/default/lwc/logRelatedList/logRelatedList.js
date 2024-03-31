@@ -8,22 +8,22 @@ import getLogs from "@salesforce/apex/LogRelatedListController.getLogs";
 import hasAccess from "@salesforce/apex/LogRelatedListController.hasAccess";
 import BODY_FIELD from "@salesforce/schema/Log__c.Body__c";
 import CONTEXT_FIELD from "@salesforce/schema/Log__c.Context__c";
-import CREATED_DATE_FIELD from "@salesforce/schema/Log__c.CreatedDate";
 import ID_FIELD from "@salesforce/schema/Log__c.Id";
 import LEVEL_FIELD from "@salesforce/schema/Log__c.Level__c";
-import LOG_NAME_FIELD from "@salesforce/schema/Log__c.Name";
+import LOGGED_AT_FIELD from "@salesforce/schema/Log__c.LoggedAt__c";
+import LOG_NUMBER_FIELD from "@salesforce/schema/Log__c.Name";
 import LOG_OBJECT from "@salesforce/schema/Log__c";
 const URL_FIELD = "LogUrl";
-const CREATED_BY_NAME_FIELD = "CreatedByName";
-const CREATED_BY_URL_FIELD = "CreatedByUrl";
+const LOGGED_BY_NAME_FIELD = "LoggedByName";
+const LOGGED_BY_URL_FIELD = "LoggedByUrl";
 const COLUMNS = [
 	{
-		label: "Log",
+		label: "Log Number",
 		fieldName: URL_FIELD,
 		includeInRelatedList: true,
 		type: "url",
 		typeAttributes: {
-			label: { fieldName: LOG_NAME_FIELD?.fieldApiName }
+			label: { fieldName: LOG_NUMBER_FIELD?.fieldApiName }
 		}
 	},
 	{
@@ -41,16 +41,16 @@ const COLUMNS = [
 		fieldName: CONTEXT_FIELD?.fieldApiName
 	},
 	{
-		label: "Created By",
-		fieldName: CREATED_BY_URL_FIELD,
+		label: "Logged By",
+		fieldName: LOGGED_BY_URL_FIELD,
 		type: "url",
 		typeAttributes: {
-			label: { fieldName: CREATED_BY_NAME_FIELD }
+			label: { fieldName: LOGGED_BY_NAME_FIELD }
 		}
 	},
 	{
-		label: "Created Date",
-		fieldName: CREATED_DATE_FIELD?.fieldApiName,
+		label: "Logged At",
+		fieldName: LOGGED_AT_FIELD?.fieldApiName,
 		includeInRelatedList: true,
 		type: "date",
 		typeAttributes: {
@@ -213,7 +213,7 @@ export default class LogRelatedList extends NavigationMixin(LightningElement) {
 		// use the Workspace API to open the view all component in a new subtab
 		await openSubtab(this.currentTabId, {
 			focus: true,
-			icon: "custom:custom25",
+			icon: "standard:form",
 			iconAlt: this.title,
 			label: this.title,
 			url: this.viewAllUrl
