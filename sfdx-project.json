@@ -6,8 +6,8 @@
 			"definitionFile": "config/project-scratch-def.json",
 			"dependencies": [],
 			"package": "apex-logger",
-			"versionName": "ver 1.1.0",
-			"versionNumber": "1.1.0.NEXT",
+			"versionName": "ver 1.2.0",
+			"versionNumber": "1.2.0.NEXT",
 			"versionDescription": ""
 		}
 	],
@@ -20,6 +20,7 @@
 		"apex-logger@0.1.0-1": "04tDn0000011NR4IAM",
 		"apex-logger@0.2.0-1": "04tDn0000006weZIAQ",
 		"apex-logger@1.0.0-1": "04tDn0000006wgaIAA",
-		"apex-logger@1.1.0-1": "04tDn0000003nDtIAI"
+		"apex-logger@1.1.0-1": "04tDn0000003nDtIAI",
+		"apex-logger@1.2.0-1": "04tDn000000B34lIAC"
 	}
 }
