@@ -169,13 +169,7 @@ new Logger().finest('Hello world!').publish();
 
 ### Installation
 
-`apex-logger` is available as an unlocked package. Before installing the logger package, install the [`lwc-related-list`](https://github.com/jasonsiders/lwc-related-list) package. Run this command:
-
-```sh
-sf package install -p 04tDn0000011NQzIAM -w 5
-```
-
-Once installed, you are ready to install the logger package. Obtain the latest package version id (starting with `04t`) via the [Releases](https://github.com/jasonsiders/apex-logger/releases/latest) tab. Run this command to install the package to your environment. Replace 04t... with your desired package version Id:
+`apex-logger` is available as an unlocked package. Obtain the latest package version id (starting with `04t`) via the [Releases](https://github.com/jasonsiders/apex-logger/releases/latest) tab. Run this command to install the package to your environment. Replace 04t... with your desired package version Id:
 
 ```sh
 sf package install -p 04t... -w 3

@@ -10,10 +10,10 @@ public abstract class LogRelatedListController {
 					Id,
 					Body__c,
 					Context__c,
-					CreatedById,
-					CreatedBy.Name,
-					CreatedDate,
 					Level__c,
+					LoggedAt__c,
+					LoggedBy__c,
+					LoggedBy__r.Name,
 					Name,
 					RelatedRecordId__c
 				FROM Log__c
@@ -24,5 +24,10 @@ public abstract class LogRelatedListController {
 		} catch (Exception error) {
 			throw new AuraHandledException(error?.getMessage());
 		}
+	}
+
+	@AuraEnabled(cacheable=true)
+	public static Boolean hasAccess() {
+		return SObjectType.Log__c?.isAccessible() == true;
 	}
 }
